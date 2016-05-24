@@ -1,0 +1,104 @@
+<div class="row">
+    <div class="col-md-4 bg-success">
+        <h2>Successful in last 24h</h2>
+        <h3>12</h3>
+    </div>
+    <div class="col-md-4 bg-primary">
+        <h2>Currently running</h2>
+        <h3>12</h3>
+    </div>
+    <div class="col-md-4 bg-danger">
+        <h2>Failed in last 24h</h2>
+        <h3>0</h3>
+    </div>
+</div>
+
+<h1>Current jobs</h1>
+<table class="table table-condensed table-stripped">
+    <tr>
+        <th>ID</th>
+        <th>Created at</th>
+        <th>Execute at</th>
+        <th>Started at</th>
+        <th>Finished at</th>
+        <th>Log</th>
+        <th>Command</th>
+        <th>Executions</th>
+        <th>Retries</th>
+        <th>Progress</th>
+    </tr>
+    {% for queue in currentQueue %}
+        <tr>
+            <th>{{ queue.id }}</th>
+            <th>{{ queue.created_at }}</th>
+            <th>{{ queue.execute_at }}</th>
+            <th>{{ queue.started_at }}</th>
+            <th>{{ queue.finished_at }}</th>
+            <th>{{ queue.log }}</th>
+            <th>{{ queue.command }}</th>
+            <th>{{ queue.executions }}</th>
+            <th>{{ queue.retries }}</th>
+            <th>{{ queue.progress }}</th>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Next jobs</h1>
+<table class="table table-condensed table-stripped">
+    <tr>
+        <th>ID</th>
+        <th>Created at</th>
+        <th>Execute at</th>
+        <th>Started at</th>
+        <th>Finished at</th>
+        <th>Log</th>
+        <th>Command</th>
+        <th>Executions</th>
+        <th>Retries</th>
+        <th>Progress</th>
+    </tr>
+    {% for queue in nextQueue %}
+        <tr>
+            <th>{{ queue.id }}</th>
+            <th>{{ queue.created_at }}</th>
+            <th>{{ queue.execute_at }}</th>
+            <th>{{ queue.started_at }}</th>
+            <th>{{ queue.finished_at }}</th>
+            <th>{{ queue.log }}</th>
+            <th>{{ queue.command }}</th>
+            <th>{{ queue.executions }}</th>
+            <th>{{ queue.retries }}</th>
+            <th>{{ queue.progress }}</th>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Past jobs</h1>
+<table class="table table-condensed table-stripped">
+    <tr>
+        <th>ID</th>
+        <th>Created at</th>
+        <th>Execute at</th>
+        <th>Started at</th>
+        <th>Finished at</th>
+        <th>Log</th>
+        <th>Command</th>
+        <th>Executions</th>
+        <th>Retries</th>
+        <th>Progress</th>
+    </tr>
+    {% for queue in prevQueue %}
+        <tr>
+            <th>{{ queue.id }}</th>
+            <th>{{ queue.created_at }}</th>
+            <th>{{ queue.execute_at }}</th>
+            <th>{{ queue.started_at }}</th>
+            <th>{{ queue.finished_at }}</th>
+            <th>{{ queue.log }}</th>
+            <th>{{ queue.command }}</th>
+            <th>{{ queue.executions }}</th>
+            <th>{{ queue.retries }}</th>
+            <th>{{ queue.progress }}</th>
+        </tr>
+    {% endfor %}
+</table>
