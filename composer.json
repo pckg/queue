@@ -1,0 +1,21 @@
+{
+  "name": "pckg/queue",
+  "description": "Queue",
+  "homepage": "https://github.com/pckg/queue",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Bojan Rajh",
+      "email": "schtr4jh@schtr4jh.net"
+    }
+  ],
+  "require": {},
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "": [
+        "src/"
+      ]
+    }
+  }
+}
