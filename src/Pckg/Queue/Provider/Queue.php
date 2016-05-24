@@ -2,6 +2,7 @@
 
 use Pckg\Framework\Provider;
 use Pckg\Generic\Middleware\EncapsulateResponse;
+use Pckg\Queue\Console\RunQueue;
 use Pckg\Queue\Controller\Queue as QueueController;
 use Pckg\Auth\Provider\Config as AuthProvider;
 use Pckg\Dynamic\Provider\Config as DynamicProvider;
@@ -39,6 +40,13 @@ class Queue extends Provider
     {
         return [
             EncapsulateResponse::class,
+        ];
+    }
+
+    public function consoles()
+    {
+        return [
+            RunQueue::class,
         ];
     }
 

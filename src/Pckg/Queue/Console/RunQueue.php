@@ -33,7 +33,9 @@ class RunQueue extends Command
         $waitingQueue->each(function (QueueRecord $queue) {
             $queue->changeStatus('running');
 
-            exec($queue->command, $output);
+            $this->output($queue->command);
+            $output = null;
+            //exec($queue->command, $output);
 
             $queue->changeStatus('finished', [
                 'log' => $output,

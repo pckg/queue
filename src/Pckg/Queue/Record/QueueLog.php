@@ -6,6 +6,6 @@ use Pckg\Queue\Entity\QueueLogs as QueueLogs;
 class QueueLog extends Record
 {
 
-    protected $entity = QueueLog::class;
+    protected $entity = QueueLogs::class;
 
 }
