@@ -24,22 +24,22 @@ class RunQueue extends Command
          * Set queue as started, we'll execute it later.
          */
         $waitingQueue->each(function (QueueRecord $queue) {
-            $queue->changeStatus('started');
+            //$queue->changeStatus('started');
         }, false);
 
         /**
          * Execute jobs.
          */
         $waitingQueue->each(function (QueueRecord $queue) {
-            $queue->changeStatus('running');
+            //$queue->changeStatus('running');
 
             $this->output($queue->command);
             $output = null;
             //exec($queue->command, $output);
 
-            $queue->changeStatus('finished', [
+            /*$queue->changeStatus('finished', [
                 'log' => $output,
-            ]);
+            ]);*/
         }, false);
     }
 

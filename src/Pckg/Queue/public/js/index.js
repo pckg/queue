@@ -1,38 +1,5 @@
 (function (Vue, $, data) {
 
-    var http = {
-
-        formToData: function (vueElement, keys) {
-            var data = {};
-
-            $.each(keys, function (i, key) {
-                data[key] = vueElement.form[key];
-            });
-
-            return data;
-        },
-
-        submitForm: function (vueElement, fields) {
-            var data = http.formToData(vueElement, fields);
-            var $form = $(vueElement.$el);
-            var url = $form.attr('action');
-
-            $.post(url, data, function (data) {
-
-            }, 'JSON');
-        },
-
-        getJSON: function (url, whenDone) {
-            $.ajax({
-                url: url,
-                dataType: 'JSON'
-            }).done(function (data) {
-                whenDone(data);
-            });
-        }
-
-    };
-
     Vue.component('pckg-queue-table', {
         template: '#pckg-queue-table',
         props: {
@@ -61,6 +28,23 @@
                     this.queues = json.queues;
                 }.bind(this));
             }.bind(this), 5000);
+        },
+        methods: {
+            getClass: function (queue) {
+                if (queue.status == 'failed_permanently') {
+                    return 'danger';
+                } else if (queue.status == 'failed') {
+                    return 'warning';
+                } else if (queue.status == 'running') {
+                    return 'info';
+                } else if (queue.status == 'started') {
+                    return 'success';
+                } else if (queue.status == 'created') {
+                    return 'text-muted';
+                }
+
+                return '';
+            }
         }
     });
 

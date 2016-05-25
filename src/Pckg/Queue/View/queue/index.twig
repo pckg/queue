@@ -17,7 +17,7 @@
     {% verbatim %}
     <script type="text/x-template" id="pckg-queue-table">
         <h3>{{ table }} ({{ queues.length }})</h3>
-        <table class="table table-condensed table-stripped">
+        <table class="table table-condensed table-stripped" v-if="queues.length">
             <tr>
                 <th>ID</th>
                 <th>Created at</th>
@@ -26,11 +26,9 @@
                 <th>Finished at</th>
                 <th>Log</th>
                 <th>Command</th>
-                <th>Executions</th>
-                <th>Retries</th>
-                <th>Progress</th>
+                <th>Status</th>
             </tr>
-                <tr v-for="queue in queues">
+                <tr v-for="queue in queues" v-bind:class="getClass(queue)">
                     <th>{{ queue.id }}</th>
                     <th>{{ queue.created_at }}</th>
                     <th>{{ queue.execute_at }}</th>
@@ -38,11 +36,10 @@
                     <th>{{ queue.finished_at }}</th>
                     <th>{{ queue.log }}</th>
                     <th>{{ queue.shortCommand }}</th>
-                    <th>{{ queue.executions }}</th>
-                    <th>{{ queue.retries }}</th>
-                    <th>{{ queue.progress }}</th>
+                    <th>{{ queue.executions }} / {{ queue.retries }} / {{ queue.progress }}% / {{ queue.status }}</th>
                 </tr>
         </table>
+        <p v-else>No jobs, no working =)</p>
     </script>
     {% endverbatim %}
     <script type="text/javascript">

@@ -22,7 +22,7 @@ class Queue extends Entity
 
     public function current()
     {
-        return $this->where('execute_at', date('Y-m-d H:i:s'));
+        return $this->status('running');
     }
 
     public function past()
