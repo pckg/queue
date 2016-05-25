@@ -13,6 +13,15 @@ use Pckg\Manager\Provider\Config as ManagerProvider;
 class Queue extends Provider
 {
 
+    public function assets()
+    {
+        return [
+            'footer' => [
+                'js/index.js',
+            ],
+        ];
+    }
+
     public function providers()
     {
         return [
@@ -27,10 +36,20 @@ class Queue extends Provider
     {
         return [
             'url' => [
+                '/'     => [
+                    'controller' => QueueController::class,
+                    'view'       => 'index',
+                    'name'       => 'pckg.queue.index',
+                ],
                 '/jobs' => [
                     'controller' => QueueController::class,
                     'view'       => 'index',
                     'name'       => 'pckg.queue.index',
+                ],
+                '/ajax/jobs/[type]' => [
+                    'controller' => QueueController::class,
+                    'view'       => 'ajax',
+                    'name'       => 'pckg.queue.ajax.jobs',
                 ],
             ],
         ];

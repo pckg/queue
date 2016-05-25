@@ -38,6 +38,7 @@ class Queue extends Entity
 
     /**
      * @param $status
+     *
      * @return $this
      *
      * Statuses:
@@ -51,6 +52,11 @@ class Queue extends Entity
     public function status($status)
     {
         return $this->where('status', $status);
+    }
+
+    public function inLast($time)
+    {
+        return $this->where('finished_at', date('Y-m-d H:i:s', strtotime('-' . $time)), '>');
     }
 
 }
