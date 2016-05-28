@@ -18,17 +18,17 @@ class Queue
 
     public function getWaiting()
     {
-        return $this->queue->waiting()
+        return $this->queue->where('execute_at', date('Y-m-d H:i:s'), '<')
             ->status(['created', 'failed'])
             ->all();
     }
 
-    public function create($command)
+    public function create($command, $data = [])
     {
         $queue = new QueueRecord([
             'execute_at' => date('Y-m-d H:i:s'),
             'status'     => 'created',
-            'command'    => $command,
+            'command'    => 'php ' . path('root') . 'console ' . lcfirst(get_class(app())) . ' ' . $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
         ]);
         $queue->save();
 

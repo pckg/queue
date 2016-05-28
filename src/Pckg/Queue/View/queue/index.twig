@@ -29,14 +29,22 @@
                 <th>Status</th>
             </tr>
                 <tr v-for="queue in queues" v-bind:class="getClass(queue)">
-                    <th>{{ queue.id }}</th>
-                    <th>{{ queue.created_at }}</th>
-                    <th>{{ queue.execute_at }}</th>
-                    <th>{{ queue.started_at }}</th>
-                    <th>{{ queue.finished_at }}</th>
-                    <th>{{ queue.log }}</th>
-                    <th>{{ queue.shortCommand }}</th>
-                    <th>{{ queue.executions }} / {{ queue.retries }} / {{ queue.progress }}% / {{ queue.status }}</th>
+                    <td>{{ queue.id }}</td>
+                    <td>{{ queue.created_at }}</td>
+                    <td>{{ queue.execute_at }}</td>
+                    <td>{{ queue.started_at }}</td>
+                    <td>{{ queue.finished_at }}</td>
+                    <td v-bind:title="queue.log">{{ queue.shortLog }}</td>
+                    <td v-bind:title="queue.command">{{ queue.shortCommand }}</td>
+                    <td>{{ queue.executions }} / {{ queue.retries }} / {{ queue.progress }}% / {{ queue.status }}</td>
+                    <template v-if="queue.logs">
+                        <tr v-for="log in queue.logs">
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.datetime }}</td>
+                            <td>{{ log.log }}</td>
+                            <td>{{ queue.progress }}% / {{ log.status }}</td>
+                        </tr>
+                    </template>
                 </tr>
         </table>
         <p v-else>No jobs, no working =)</p>

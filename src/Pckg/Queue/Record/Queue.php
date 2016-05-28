@@ -10,6 +10,8 @@ class Queue extends Record
 
     protected $toArray = [
         'shortCommand',
+        'shortLog',
+        'logs',
     ];
 
     public function getShortCommand()
@@ -23,15 +25,29 @@ class Queue extends Record
         }, explode(' ', $this->command)));
     }
 
+    public function getShortLog()
+    {
+        return substr($this->log, 0, 32) . (strlen($this->log) > 32 ? '...' : '');
+    }
+
     public function changeStatus($status, $log = [])
     {
         $this->status = $status;
 
+        if (isset($log['log'])) {
+            $this->log = $log['log'] . "\n\n" . $this->log;
+        }
+
+        if (isset($log['progress'])) {
+            $this->progress = $log['progress'];
+        }
+
         $this->setDatetimeByStatus();
         $this->setPercentageByStatus();
-        $this->createLog($log);
 
         $this->save();
+
+        $this->createLog($log);
     }
 
     public function createLog($log = [])
@@ -74,6 +90,17 @@ class Queue extends Record
         if (isset($percentages[$status])) {
             $this->percentage = $percentages[$status];
         }
+    }
+
+    public function makeUniqueInFuture()
+    {
+        (new QueueEntity())->status('created')
+            ->where('id', $this->id, '!=')
+            ->where('command', $this->command)
+            ->all()
+            ->each(function (Queue $record) {
+                $record->changeStatus('skipped_unique');
+            });
     }
 
 }

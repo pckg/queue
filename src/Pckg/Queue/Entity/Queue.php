@@ -1,12 +1,15 @@
 <?php namespace Pckg\Queue\Entity;
 
 use Pckg\Database\Entity;
+use Pckg\Database\Repository;
 use Pckg\Queue\Record\Queue as QueueRecord;
 
 class Queue extends Entity
 {
 
     protected $record = QueueRecord::class;
+
+    protected $repositoryName = Repository::class . '.queue';
 
     public function logs()
     {
@@ -17,7 +20,7 @@ class Queue extends Entity
 
     public function future()
     {
-        return $this->where('execute_at', date('Y-m-d H:i:s'), '>');
+        return $this->thatWillBeExecuted();
     }
 
     public function current()
@@ -27,7 +30,19 @@ class Queue extends Entity
 
     public function past()
     {
+        $this->thatWontBeExecuted();
+
         return $this->where('execute_at', date('Y-m-d H:i:s'), '<');
+    }
+
+    public function thatWontBeExecuted()
+    {
+        return $this->where('status', ['finished', 'failed_permanently', 'skipped_unique']);
+    }
+
+    public function thatWillBeExecuted()
+    {
+        return $this->where('status', ['created', 'failed']);
     }
 
     public function waiting()
