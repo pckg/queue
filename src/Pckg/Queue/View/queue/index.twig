@@ -37,15 +37,15 @@
                     <td v-bind:title="queue.log">{{ queue.shortLog }}</td>
                     <td v-bind:title="queue.command">{{ queue.shortCommand }}</td>
                     <td>{{ queue.executions }} / {{ queue.retries }} / {{ queue.progress }}% / {{ queue.status }}</td>
-                    <template v-if="queue.logs">
-                        <tr v-for="log in queue.logs">
-                            <td>{{ log.id }}</td>
-                            <td>{{ log.datetime }}</td>
-                            <td>{{ log.log }}</td>
-                            <td>{{ queue.progress }}% / {{ log.status }}</td>
-                        </tr>
-                    </template>
                 </tr>
+                <template v-if="queue.logs">
+                    <tr v-for="log in queue.logs">
+                        <td>{{ log.id }}</td>
+                        <td>{{ log.datetime }}</td>
+                        <td>{{ log.log }}</td>
+                        <td>{{ queue.progress }}% / {{ log.status }}</td>
+                    </tr>
+                </template>
         </table>
         <p v-else>No jobs, no working =)</p>
     </script>
