@@ -1,40 +1,50 @@
 <?php namespace Pckg\Queue\Controller;
 
+use Exception;
 use Pckg\Framework\Controller;
-use Pckg\Queue\Entity\Queue as QueueEntity;
+use Pckg\Queue\Service\Queue as QueueService;
 
 class Queue extends Controller
 {
 
-    public function getIndexAction(QueueEntity $queue)
+    /**
+     * @var QueueService
+     */
+    protected $queueService;
+
+    public function __construct(QueueService $queueService)
+    {
+        $this->queueService = $queueService;
+    }
+
+    public function getIndexAction()
     {
         return view('queue/index', [
-            'nextQueue'    => $queue->future()->withLogs()->all(),
-            'currentQueue' => $queue->current()->withLogs()->all(),
-            'prevQueue'    => $queue->past()->withLogs()->all(),
-            'stat'         => [
-                'successful24h'        => $queue->past()
-                    ->status('finished')
-                    ->inLast('1 day')
-                    ->all()
-                    ->count(),
-                'failedPermanently24h' => $queue->past()
-                    ->status('failed_permanently')
-                    ->inLast('1 day')
-                    ->all()
-                    ->count(),
-                'currentlyRunning'     => $queue->status('running')
-                    ->all()
-                    ->count(),
+            'nextQueue' => $this->queueService->getNext(),
+            'currentQueue' => $this->queueService->getCurrent(),
+            'prevQueue' => $this->queueService->getPrev(),
+            'stat' => [
+                'successful24h' => $this->queueService->getTotalByStatusAndTime('finished', '1day'),
+                'failedPermanently24h' => $this->queueService->getTotalByStatusAndTime('failed_permanently', 'day'),
+                'currentlyRunning' => $this->queueService->getTotalByStatusAndTime('running', '1 day'),
             ],
         ]);
     }
 
-    public function getAjaxAction(QueueEntity $queues, $type)
+    public function getAjaxAction($type)
     {
-        return [
-            'queues' => $queues->{$type}()->withLogs()->all(),
-        ];
+        if ($type == 'next') {
+            return $this->queueService->getNext();
+
+        } else if ($type == 'current') {
+            return $this->queueService->getCurrent();
+
+        } else if ($type == 'prev') {
+            return $this->queueService->getPrev();
+
+        }
+
+        throw new Exception('Type ' . $type . 'not implemented');
     }
 
 }
