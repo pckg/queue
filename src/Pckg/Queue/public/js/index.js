@@ -25,7 +25,7 @@
         ready: function () {
             setInterval(function () {
                 http.getJSON(this.url, function (json) {
-                    this.queues = json.queues;
+                    this.queues = json;
                 }.bind(this));
             }.bind(this), 5000);
         },
