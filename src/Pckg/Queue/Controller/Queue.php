@@ -12,28 +12,31 @@ class Queue extends Controller
      */
     protected $queueService;
 
-    public function __construct(QueueService $queueService)
-    {
+    public function __construct(QueueService $queueService) {
         $this->queueService = $queueService;
     }
 
-    public function getIndexAction()
-    {
-        return view('queue/index', [
-            'nextQueue' => $this->queueService->getNext(),
-            'currentQueue' => $this->queueService->getCurrent(),
-            'prevQueue' => $this->queueService->getPrev(),
-            'startedQueue' => $this->queueService->getStarted(),
-            'stat' => [
-                'successful24h' => $this->queueService->getTotalByStatusAndTime('finished', '1 day'),
-                'failedPermanently24h' => $this->queueService->getTotalByStatusAndTime('failed_permanently', '1 day'),
-                'currentlyRunning' => $this->queueService->getTotalByStatusAndTime('running', '1 day'),
-            ],
-        ]);
+    public function getIndexAction() {
+        return view(
+            'queue/index',
+            [
+                'nextQueue'    => $this->queueService->getNext(),
+                'currentQueue' => $this->queueService->getCurrent(),
+                'prevQueue'    => $this->queueService->getPrev(),
+                'startedQueue' => $this->queueService->getStarted(),
+                'stat'         => [
+                    'successful24h'        => $this->queueService->getTotalByStatusAndTime('finished', '1 day'),
+                    'failedPermanently24h' => $this->queueService->getTotalByStatusAndTime(
+                        'failed_permanently',
+                        '1 day'
+                    ),
+                    'currentlyRunning'     => $this->queueService->getTotalByStatusAndTime('running', '1 day'),
+                ],
+            ]
+        );
     }
 
-    public function getAjaxAction($type)
-    {
+    public function getAjaxAction($type) {
         if ($type == 'next') {
             return $this->queueService->getNext();
 
