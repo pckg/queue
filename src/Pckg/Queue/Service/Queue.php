@@ -41,7 +41,7 @@ class Queue
 
     public function getStarted()
     {
-        return $this->queue->status(['started'])->all();
+        return $this->queue->status(['started'])->withLogs()->count()->all();
     }
 
     public function getWaiting()
