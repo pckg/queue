@@ -112,12 +112,12 @@ class Queue extends Record
     public function makeTimeoutAfterLast($command, $timeout) {
         $last = (new QueueEntity())->status('created')
             ->where('id', $this->id, '!=')
-            ->where('command', $command, 'LIKE')
-            ->orderBy('execute_at', 'DESC')
+            ->where('command', '%' . $command . '%', 'LIKE')
+            ->orderBy('execute_at DESC')
             ->one();
 
         if ($last) {
-            $this->execute_at = date('Y-m-d H:i:s', strtotime($timeout, strtotime($timeout)));
+            $this->execute_at = date('Y-m-d H:i:s', strtotime($timeout, strtotime($last->execute_at)));
             $this->save();
         }
     }
