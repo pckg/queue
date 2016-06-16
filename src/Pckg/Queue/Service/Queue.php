@@ -39,6 +39,11 @@ class Queue
         return $this->queue->past()->withLogs()->orderBy('finished_at DESC')->count()->limit(10)->all();
     }
 
+    public function getStarted()
+    {
+        return $this->queue->status(['started'])->all();
+    }
+
     public function getWaiting()
     {
         return $this->queue->where('execute_at', date('Y-m-d H:i:s'), '<')

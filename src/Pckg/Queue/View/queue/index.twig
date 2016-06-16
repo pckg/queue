@@ -55,9 +55,11 @@
         data.currentQueue = {{ currentQueue.toJSON() | raw }};
         data.nextQueue = {{ nextQueue.toJSON() | raw }};
         data.prevQueue = {{ prevQueue.toJSON() | raw }};
+        data.startedQueue = {{ startedQueue.toJSON() | raw }};
     </script>
 
     <pckg-queue-table :url="'/dev.php/ajax/jobs/current'" :table="'Current jobs'" :queues="currentQueue"></pckg-queue-table>
+    <pckg-queue-table :url="'/dev.php/ajax/jobs/started'" :table="'Started jobs'" :queues="startedQueue"></pckg-queue-table>
     <pckg-queue-table :url="'/dev.php/ajax/jobs/next'" :table="'Next jobs'" :queues="nextQueue"></pckg-queue-table>
     <pckg-queue-table :url="'/dev.php/ajax/jobs/prev'" :table="'Previous jobs'" :queues="prevQueue"></pckg-queue-table>
 </div>

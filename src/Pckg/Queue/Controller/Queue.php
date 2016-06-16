@@ -23,6 +23,7 @@ class Queue extends Controller
             'nextQueue' => $this->queueService->getNext(),
             'currentQueue' => $this->queueService->getCurrent(),
             'prevQueue' => $this->queueService->getPrev(),
+            'startedQueue' => $this->queueService->getStarted(),
             'stat' => [
                 'successful24h' => $this->queueService->getTotalByStatusAndTime('finished', '1 day'),
                 'failedPermanently24h' => $this->queueService->getTotalByStatusAndTime('failed_permanently', '1 day'),
@@ -41,6 +42,9 @@ class Queue extends Controller
 
         } else if ($type == 'prev') {
             return $this->queueService->getPrev();
+
+        } else if ($type == 'started') {
+            return $this->queueService->getStarted();
 
         }
 
