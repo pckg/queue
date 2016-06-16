@@ -39,7 +39,14 @@ class RunQueue extends Command
             $this->output('#' . $queue->id . ': ' . $queue->command);
             $output = null;
             try {
-                exec($queue->command, $output);
+                $timeout = strtotime($queue->execute_at) - time();
+                if ($timeout > 0) {
+                    exec('timeout -k 60 ' . $timeout . ' ' . $queue->command, $output);
+
+                } else {
+                    exec($queue->command, $output);
+
+                }
             } catch (Exception $e) {
                 $queue->changeStatus('failed', [
                     'log' => exception($e),
