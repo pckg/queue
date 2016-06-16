@@ -24,8 +24,8 @@ class Queue extends Controller
             'currentQueue' => $this->queueService->getCurrent(),
             'prevQueue' => $this->queueService->getPrev(),
             'stat' => [
-                'successful24h' => $this->queueService->getTotalByStatusAndTime('finished', '1day'),
-                'failedPermanently24h' => $this->queueService->getTotalByStatusAndTime('failed_permanently', 'day'),
+                'successful24h' => $this->queueService->getTotalByStatusAndTime('finished', '1 day'),
+                'failedPermanently24h' => $this->queueService->getTotalByStatusAndTime('failed_permanently', '1 day'),
                 'currentlyRunning' => $this->queueService->getTotalByStatusAndTime('running', '1 day'),
             ],
         ]);
