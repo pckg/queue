@@ -14,8 +14,7 @@ class Queue extends Entity
     public function logs()
     {
         return $this->hasMany(QueueLogs::class)
-            ->foreignKey('queue_id')
-            ->primaryKey('id');
+            ->foreignKey('queue_id');
     }
 
     public function future()
