@@ -38,17 +38,23 @@ class RunQueue extends Command
 
             $this->output('#' . $queue->id . ': ' . $queue->command);
             $output = null;
+            $sha1Id = sha1($queue->id);
             try {
                 $timeout = strtotime($queue->execute_at) - time();
-                if ($timeout > 0) {
-                    exec('timeout -k 60 ' . $timeout . ' ' . $queue->command, $output);
+                $command = $queue->command . ' && echo ' . $sha1Id;
+                if (false && $timeout > 0) {
+                    exec('timeout -k 60 ' . $timeout . ' ' . $command, $output);
 
                 } else {
-                    exec($queue->command, $output);
+                    exec($command, $output);
 
                 }
+
+                if (end($output) != $sha1Id) {
+                    throw new Exception('Job failed');
+                }
             } catch (Exception $e) {
-                $queue->changeStatus('failed', [
+                $queue->changeStatus('failed_permanently', [
                     'log' => exception($e),
                 ]);
 
@@ -56,7 +62,7 @@ class RunQueue extends Command
             }
 
             if (!$output) {
-                $queue->changeStatus('failed', [
+                $queue->changeStatus('failed_permanently', [
                     'log' => 'No output',
                 ]);
 
