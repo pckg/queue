@@ -51,7 +51,6 @@
     </script>
     {% endverbatim %}
     <script type="text/javascript">
-        var data = data || {};
         data.currentQueue = {{ currentQueue.toJSON() | raw }};
         data.nextQueue = {{ nextQueue.toJSON() | raw }};
         data.prevQueue = {{ prevQueue.toJSON() | raw }};
