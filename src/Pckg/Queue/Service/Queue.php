@@ -35,7 +35,7 @@ class Queue
 
     public function getPrev()
     {
-        return $this->queue->status('finished', 'failed_permanently', 'skipped_unique')->withLogs()->orderBy('finished_at DESC')->count()->limit(10)->all();
+        return $this->queue->status(['finished', 'failed_permanently', 'skipped_unique'])->withLogs()->orderBy('finished_at DESC')->count()->limit(10)->all();
     }
 
     public function getStarted()
