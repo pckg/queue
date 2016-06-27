@@ -18,8 +18,7 @@ class Queue
 
     public function getTotalByStatusAndTime($status, $time)
     {
-        return $this->queue->past()
-            ->status($status)
+        return $this->queue->status($status)
             ->inLast($time)
             ->total();
     }
