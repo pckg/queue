@@ -44,6 +44,7 @@ class RunQueue extends Command
                 try {
                     $timeout = strtotime($queue->execute_at) - time();
                     $command = $queue->command . ' && echo ' . $sha1Id;
+                    $lastLine = null;
                     if (false && $timeout > 0) {
                         exec('timeout -k 60 ' . $timeout . ' ' . $command, $output);
 
@@ -69,15 +70,17 @@ class RunQueue extends Command
                             $streamContent = stream_get_contents($stream);
 
                             $output = $errorStreamContent . $streamContent;
+                            $lastLine = substr($streamContent, -40);
 
                         } else {
                             exec($command, $output);
+                            $lastLine = end($output);
 
                         }
 
                     }
 
-                    if (end($output) != $sha1Id) {
+                    if ($lastLine != $sha1Id) {
                         throw new Exception('Job failed');
                     }
                 } catch (Exception $e) {
