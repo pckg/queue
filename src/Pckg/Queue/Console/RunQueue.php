@@ -58,7 +58,15 @@ class RunQueue extends Command
                             $connection = ssh2_connect('93.103.155.205', 22);
                             ssh2_auth_password($connection, 'schtr4jh', conf('furs.sshpass'));
 
-                            $output = ssh2_exec($connection, $command);
+                            $stream = ssh2_exec($connection, $command);
+
+                            $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+
+                            stream_set_blocking($errorStream, true);
+                            stream_set_blocking($stream, true);
+
+                            echo "Error: " . stream_get_contents($errorStream);
+                            echo "Output: " . stream_get_contents($stream);
 
                         } else {
                             exec($command, $output);
