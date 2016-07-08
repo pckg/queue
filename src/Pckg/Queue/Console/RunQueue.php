@@ -84,7 +84,7 @@ class RunQueue extends Command
                         $queue->changeStatus(
                             'failed_permanently',
                             [
-                                'log' => 'FAILED: ' . is_string($output) ? $output : implode("\n", $output),
+                                'log' => 'FAILED: ' . (is_string($output) ? $output : implode("\n", $output)),
                             ]
                         );
 
