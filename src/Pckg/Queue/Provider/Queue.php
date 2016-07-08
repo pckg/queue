@@ -4,11 +4,11 @@ use Pckg\Framework\Provider;
 use Pckg\Generic\Middleware\EncapsulateResponse;
 use Pckg\Queue\Console\RunQueue;
 use Pckg\Queue\Controller\Queue as QueueController;
-use Pckg\Auth\Provider\Config as AuthProvider;
-use Pckg\Dynamic\Provider\Config as DynamicProvider;
+use Pckg\Auth\Provider\Auth as AuthProvider;
+use Pckg\Dynamic\Provider\Dynamic as DynamicProvider;
 use Pckg\Framework\Application;
-use Pckg\Generic\Provider\Config as GenericProvider;
-use Pckg\Manager\Provider\Config as ManagerProvider;
+use Pckg\Generic\Provider\Generic as GenericProvider;
+use Pckg\Manager\Provider\Manager as ManagerProvider;
 
 class Queue extends Provider
 {
