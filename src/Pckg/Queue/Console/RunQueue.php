@@ -65,8 +65,12 @@ class RunQueue extends Command
                             stream_set_blocking($errorStream, true);
                             stream_set_blocking($stream, true);
 
-                            echo "Error: " . stream_get_contents($errorStream);
-                            echo "Output: " . stream_get_contents($stream);
+                            $errorStreamContent = stream_get_contents($errorStream);
+                            $streamContent = stream_get_contents($stream)
+                            echo "Error: " . $errorStreamContent;
+                            echo "Output: " . $streamContent;
+
+                            $output = $errorStreamContent . $streamContent;
 
                         } else {
                             exec($command, $output);
