@@ -14,7 +14,7 @@ class QueueLogs extends Entity
     public function queue()
     {
         return $this->belongsTo(Queue::class)
-            ->foreignKey('queue_id');
+                    ->foreignKey('queue_id');
     }
 
 }

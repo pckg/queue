@@ -14,7 +14,8 @@ class Queue extends Record
         'logs',
     ];
 
-    public function getShortCommand() {
+    public function getShortCommand()
+    {
         return implode(
             ' ',
             array_map(
@@ -30,11 +31,13 @@ class Queue extends Record
         );
     }
 
-    public function getShortLog() {
+    public function getShortLog()
+    {
         return substr($this->log, 0, 32) . (strlen($this->log) > 32 ? '...' : '');
     }
 
-    public function changeStatus($status, $log = []) {
+    public function changeStatus($status, $log = [])
+    {
         $this->status = $status;
 
         if (isset($log['log'])) {
@@ -53,7 +56,8 @@ class Queue extends Record
         $this->createLog($log);
     }
 
-    public function createLog($log = []) {
+    public function createLog($log = [])
+    {
         $log = new QueueLog(
             array_merge(
                 $log,
@@ -67,7 +71,8 @@ class Queue extends Record
         $log->save();
     }
 
-    public function setDatetimeByStatus($status = null) {
+    public function setDatetimeByStatus($status = null)
+    {
         if (!$status) {
             $status = $this->status;
         }
@@ -82,7 +87,8 @@ class Queue extends Record
         }
     }
 
-    public function setPercentageByStatus($status = null) {
+    public function setPercentageByStatus($status = null)
+    {
         if (!$status) {
             $status = $this->status;
         }
@@ -97,7 +103,8 @@ class Queue extends Record
         }
     }
 
-    public function makeUniqueInFuture() {
+    public function makeUniqueInFuture()
+    {
         (new QueueEntity())->status('created')
                            ->where('id', $this->id, '!=')
                            ->where('command', $this->command)
@@ -109,12 +116,13 @@ class Queue extends Record
                            );
     }
 
-    public function makeTimeoutAfterLast($command, $timeout) {
+    public function makeTimeoutAfterLast($command, $timeout)
+    {
         $last = (new QueueEntity())->status('created')
-            ->where('id', $this->id, '!=')
-            ->where('command', '%' . $command . '%', 'LIKE')
-            ->orderBy('execute_at DESC')
-            ->one();
+                                   ->where('id', $this->id, '!=')
+                                   ->where('command', '%' . $command . '%', 'LIKE')
+                                   ->orderBy('execute_at DESC')
+                                   ->one();
 
         if ($last) {
             $this->execute_at = date('Y-m-d H:i:s', strtotime($timeout, strtotime($last->execute_at)));

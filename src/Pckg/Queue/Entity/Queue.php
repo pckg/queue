@@ -14,7 +14,7 @@ class Queue extends Entity
     public function logs()
     {
         return $this->hasMany(QueueLogs::class)
-            ->foreignKey('queue_id');
+                    ->foreignKey('queue_id');
     }
 
     public function future()
@@ -47,7 +47,7 @@ class Queue extends Entity
     public function waiting()
     {
         return $this->where('execute_at', date('Y-m-d H:i:s'), '<')
-            ->where('started_at', null);
+                    ->where('started_at', null);
     }
 
     /**

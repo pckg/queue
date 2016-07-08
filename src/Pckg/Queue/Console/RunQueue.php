@@ -8,7 +8,8 @@ use Pckg\Queue\Service\Queue;
 class RunQueue extends Command
 {
 
-    protected function configure() {
+    protected function configure()
+    {
         $this->setName('queue:run')
              ->setDescription('Run waiting queue');
     }
@@ -16,7 +17,8 @@ class RunQueue extends Command
     /**
      * @param Queue $queue
      */
-    public function handle(Queue $queueService) {
+    public function handle(Queue $queueService)
+    {
         $waitingQueue = $queueService->getWaiting();
 
         /**

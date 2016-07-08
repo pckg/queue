@@ -19,8 +19,8 @@ class Queue
     public function getTotalByStatusAndTime($status, $time)
     {
         return $this->queue->status($status)
-            ->inLast($time)
-            ->total();
+                           ->inLast($time)
+                           ->total();
     }
 
     public function getNext()
@@ -35,7 +35,9 @@ class Queue
 
     public function getPrev()
     {
-        return $this->queue->status(['finished', 'failed_permanently', 'skipped_unique'])->withLogs()->orderBy('execute_at DESC')->count()->limit(10)->all();
+        return $this->queue->status(['finished', 'failed_permanently', 'skipped_unique'])->withLogs()->orderBy(
+            'execute_at DESC'
+        )->count()->limit(10)->all();
     }
 
     public function getStarted()
@@ -46,17 +48,21 @@ class Queue
     public function getWaiting()
     {
         return $this->queue->where('execute_at', date('Y-m-d H:i:s'), '<')
-            ->status(['created', 'failed'])
-            ->all();
+                           ->status(['created', 'failed'])
+                           ->all();
     }
 
     public function create($command, $data = [])
     {
-        $queue = new QueueRecord([
-            'execute_at' => date('Y-m-d H:i:s'),
-            'status' => 'created',
-            'command' => 'php ' . path('root') . 'console ' . lcfirst(get_class(app())) . ' ' . $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
-        ]);
+        $queue = new QueueRecord(
+            [
+                'execute_at' => date('Y-m-d H:i:s'),
+                'status'     => 'created',
+                'command'    => 'php ' . path('root') . 'console ' . lcfirst(
+                        get_class(app())
+                    ) . ' ' . $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
+            ]
+        );
         $queue->save();
 
         return $queue;

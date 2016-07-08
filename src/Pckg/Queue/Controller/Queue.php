@@ -12,11 +12,13 @@ class Queue extends Controller
      */
     protected $queueService;
 
-    public function __construct(QueueService $queueService) {
+    public function __construct(QueueService $queueService)
+    {
         $this->queueService = $queueService;
     }
 
-    public function getIndexAction() {
+    public function getIndexAction()
+    {
         return view(
             'queue/index',
             [
@@ -36,7 +38,8 @@ class Queue extends Controller
         );
     }
 
-    public function getAjaxAction($type) {
+    public function getAjaxAction($type)
+    {
         if ($type == 'next') {
             return $this->queueService->getNext();
 
