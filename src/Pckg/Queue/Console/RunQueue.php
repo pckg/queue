@@ -70,7 +70,7 @@ class RunQueue extends Command
                             $streamContent = stream_get_contents($stream);
 
                             $output = $errorStreamContent . $streamContent;
-                            $lastLine = substr($streamContent, -40);
+                            $lastLine = substr($streamContent, -42, 40);
 
                         } else {
                             exec($command, $output);
