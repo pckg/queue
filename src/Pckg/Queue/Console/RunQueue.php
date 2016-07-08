@@ -8,72 +8,100 @@ use Pckg\Queue\Service\Queue;
 class RunQueue extends Command
 {
 
-    protected function configure()
-    {
+    protected function configure() {
         $this->setName('queue:run')
-            ->setDescription('Run waiting queue');
+             ->setDescription('Run waiting queue');
     }
 
     /**
      * @param Queue $queue
      */
-    public function handle(Queue $queueService)
-    {
+    public function handle(Queue $queueService) {
         $waitingQueue = $queueService->getWaiting();
 
         /**
          * Set queue as started, we'll execute it later.
          */
-        $waitingQueue->each(function (QueueRecord $queue) {
-            $this->output('#' . $queue->id . ': ' . 'started (' . date('Y-m-d H:i:s') . ')');
-            $queue->changeStatus('started');
-        }, false);
+        $waitingQueue->each(
+            function(QueueRecord $queue) {
+                $this->output('#' . $queue->id . ': ' . 'started (' . date('Y-m-d H:i:s') . ')');
+                $queue->changeStatus('started');
+            },
+            false
+        );
 
         /**
          * Execute jobs.
          */
-        $waitingQueue->each(function (QueueRecord $queue) {
-            $this->output('#' . $queue->id . ': ' . 'running (' . date('Y-m-d H:i:s') . ')');
-            $queue->changeStatus('running');
+        $waitingQueue->each(
+            function(QueueRecord $queue) {
+                $this->output('#' . $queue->id . ': ' . 'running (' . date('Y-m-d H:i:s') . ')');
+                $queue->changeStatus('running');
 
-            $this->output('#' . $queue->id . ': ' . $queue->command);
-            $output = null;
-            $sha1Id = sha1($queue->id);
-            try {
-                $timeout = strtotime($queue->execute_at) - time();
-                $command = $queue->command . ' && echo ' . $sha1Id;
-                if (false && $timeout > 0) {
-                    exec('timeout -k 60 ' . $timeout . ' ' . $command, $output);
+                $this->output('#' . $queue->id . ': ' . $queue->command);
+                $output = null;
+                $sha1Id = sha1($queue->id);
+                try {
+                    $timeout = strtotime($queue->execute_at) - time();
+                    $command = $queue->command . ' && echo ' . $sha1Id;
+                    if (false && $timeout > 0) {
+                        exec('timeout -k 60 ' . $timeout . ' ' . $command, $output);
 
-                } else {
-                    exec($command, $output);
+                    } else {
+                        if (strpos($command, 'furs:confirm')) {
+                            $command = str_replace(
+                                '/www/schtr4jh/impero.foobar.si/htdocs/',
+                                '/www/schtr4jh/bob.pckg.impero/htdocs/',
+                                $command
+                            );
 
+                            $connection = ssh2_connect('93.103.155.205', 22);
+                            ssh2_auth_password($connection, 'schtr4jh', conf('defaults.furs.sshpass'));
+
+                            $output = ssh2_exec($connection, $command);
+
+                        } else {
+                            exec($command, $output);
+
+                        }
+
+                    }
+
+                    if (end($output) != $sha1Id) {
+                        throw new Exception('Job failed');
+                    }
+                } catch (Exception $e) {
+                    $queue->changeStatus(
+                        'failed_permanently',
+                        [
+                            'log' => exception($e),
+                        ]
+                    );
+
+                    return;
                 }
 
-                if (end($output) != $sha1Id) {
-                    throw new Exception('Job failed');
+                if (!$output) {
+                    $queue->changeStatus(
+                        'failed_permanently',
+                        [
+                            'log' => 'No output',
+                        ]
+                    );
+
+                    return;
                 }
-            } catch (Exception $e) {
-                $queue->changeStatus('failed_permanently', [
-                    'log' => exception($e),
-                ]);
 
-                return;
-            }
-
-            if (!$output) {
-                $queue->changeStatus('failed_permanently', [
-                    'log' => 'No output',
-                ]);
-
-                return;
-            }
-
-            $this->output('#' . $queue->id . ': ' . 'finished (' . date('Y-m-d H:i:s') . ')');
-            $queue->changeStatus('finished', [
-                'log' => implode("\n", $output),
-            ]);
-        }, false);
+                $this->output('#' . $queue->id . ': ' . 'finished (' . date('Y-m-d H:i:s') . ')');
+                $queue->changeStatus(
+                    'finished',
+                    [
+                        'log' => implode("\n", $output),
+                    ]
+                );
+            },
+            false
+        );
     }
 
 }
