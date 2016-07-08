@@ -81,6 +81,15 @@ class RunQueue extends Command
                     }
 
                     if ($lastLine != $sha1Id) {
+                        $queue->changeStatus(
+                            'failed_permanently',
+                            [
+                                'log' => 'FAILED: ' . is_string($output) ? $output : implode("\n", $output),
+                            ]
+                        );
+
+                        return;
+
                         throw new Exception('Job failed');
                     }
                 } catch (Exception $e) {
