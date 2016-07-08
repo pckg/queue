@@ -69,8 +69,8 @@ class RunQueue extends Command
                             $errorStreamContent = stream_get_contents($errorStream);
                             $streamContent = stream_get_contents($stream);
 
-                            $output = $errorStreamContent . $streamContent;
-                            $lastLine = substr($streamContent, -42, 40);
+                            $output = $errorStreamContent . "\n" . $streamContent;
+                            $lastLine = substr($streamContent, -41, 40);
 
                         } else {
                             exec($command, $output);
@@ -118,7 +118,7 @@ class RunQueue extends Command
                 $queue->changeStatus(
                     'finished',
                     [
-                        'log' => implode("\n", $output),
+                        'log' => is_string($output) ? $output : implode("\n", $output),
                     ]
                 );
             },
