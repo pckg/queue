@@ -14,7 +14,7 @@ class Queue extends Record
         'logs',
     ];
 
-    public function getShortCommand()
+    public function getShortCommandAttribute()
     {
         return implode(
             ' ',
@@ -31,7 +31,7 @@ class Queue extends Record
         );
     }
 
-    public function getShortLog()
+    public function getShortLogAttribute()
     {
         return substr($this->log, 0, 32) . (strlen($this->log) > 32 ? '...' : '');
     }
