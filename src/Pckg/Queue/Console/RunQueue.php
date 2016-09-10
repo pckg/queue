@@ -54,7 +54,7 @@ class RunQueue extends Command
                         if (strpos($command, 'furs:confirm')) {
                             $command = str_replace(
                                 '/www/schtr4jh/impero.foobar.si/htdocs/',
-                                '/www/schtr4jh/bob.pckg.impero/htdocs/',
+                                '/www/schtr4jh/bob.pckg.derive/htdocs/',
                                 $command
                             );
 
