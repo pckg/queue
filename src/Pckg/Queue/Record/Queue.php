@@ -130,4 +130,13 @@ class Queue extends Record
         }
     }
 
+    public function then($next)
+    {
+        $nextQueue = $next();
+        $nextQueue->waiting_id = $this->id;
+        $nextQueue->save();
+
+        return $this;
+    }
+
 }

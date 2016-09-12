@@ -25,6 +25,7 @@ class Queue extends Migration
         $queue->integer('executions');
         $queue->integer('retries');
         $queue->decimal('progress');
+        $queue->integer('waiting_id')->references('queue');
 
         $queueLog = $this->table('queue_logs');
         $queueLog->integer('queue_id')->references('queue');

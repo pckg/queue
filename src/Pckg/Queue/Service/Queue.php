@@ -1,5 +1,6 @@
 <?php namespace Pckg\Queue\Service;
 
+use Pckg\Database\Query\Raw;
 use Pckg\Queue\Entity\Queue as QueueEntity;
 use Pckg\Queue\Record\Queue as QueueRecord;
 
@@ -48,19 +49,29 @@ class Queue
     public function getWaiting()
     {
         return $this->queue->where('execute_at', date('Y-m-d H:i:s'), '<')
+                           ->where(
+                               Raw::raw(
+                                   'waiting_id IS NULL OR waiting_id IN (SELECT id FROM queue WHERE status = \'finished\')'
+                               )
+                           )
                            ->status(['created', 'failed'])
                            ->all();
     }
 
+    /**
+     * @param       $command
+     * @param array $data
+     *
+     * @return QueueRecord
+     */
     public function create($command, $data = [])
     {
         $queue = new QueueRecord(
             [
                 'execute_at' => date('Y-m-d H:i:s'),
                 'status'     => 'created',
-                'command'    => 'php ' . path('root') . 'console ' . lcfirst(
-                        get_class(app())
-                    ) . ' ' . $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
+                'command'    => 'php ' . path('root') . 'console ' . lcfirst(get_class(app())) . ' ' .
+                                $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
             ]
         );
         $queue->save();
