@@ -53,8 +53,8 @@ class RunQueue extends Command
                     } else {
                         if (strpos($command, 'furs:confirm')) {
                             $command = str_replace(
-                                '/www/schtr4jh/impero.foobar.si/htdocs/',
-                                '/www/schtr4jh/bob.pckg.derive/htdocs/',
+                                ['/www/schtr4jh/derive.foobar.si/htdocs/'],
+                                ['/www/schtr4jh/bob.pckg.derive/htdocs/'],
                                 $command
                             );
 
@@ -75,6 +75,11 @@ class RunQueue extends Command
                             $lastLine = substr($streamContent, -41, 40);
 
                         } else {
+                            $command = str_replace(
+                                ['\\\\', '"', ','],
+                                ['\\\\\\\\', '\"', '\,'],
+                                $command
+                            );
                             exec($command, $output);
                             $lastLine = end($output);
 
