@@ -73,7 +73,7 @@ class Queue
                 'execute_at' => date('Y-m-d H:i:s'),
                 'status'     => 'created',
                 'command'    => 'php ' . path('root') . 'console ' . lcfirst(get_class(app())) . ' ' .
-                                ($platformName ? $platformName . ' ' . '') .
+                                ($platformName ? $platformName . ' ' : '') .
                                 $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
             ]
         );
