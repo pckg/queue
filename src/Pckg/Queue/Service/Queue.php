@@ -81,10 +81,13 @@ class Queue
                 /**
                  * Array of values should be handled differently.
                  */
-                foreach ($val as $subval) {
-                    $parameters[] = '--' . $key . '=' . escapeshellarg($subval);
+                if (isset($val[0]) && isset($val[count($val) - 1])) {
+                    foreach ($val as $subval) {
+                        $parameters[] = '--' . $key . '=' . escapeshellarg($subval);
+                    }
+                } else {
+                    $parameters[] = '--' . $key . '=' . escapeshellarg(json_encode($val));
                 }
-                $parameters[] = '--' . $key . '=' . escapeshellarg(json_encode($val));
 
             } else {
                 /**
