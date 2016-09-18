@@ -66,15 +66,44 @@ class Queue
      */
     public function create($command, $data = [])
     {
+        $appName = lcfirst(get_class(app()));
         $platformName = context()->getOrDefault('platformName');
+        $path = path('root') . 'console';
+        $parameters = [];
+        foreach ($data as $key => $val) {
+            if (is_int($key)) {
+                /**
+                 * We're passing attribute, option without value or already encoded part of command.
+                 */
+                $parameters[] = $val;
+
+            } elseif (is_array($val)) {
+                /**
+                 * Array of values should be handled differently.
+                 */
+                foreach ($val as $subval) {
+                    $parameters[] = '--' . $key . '=' . escapeshellarg($subval);
+                }
+                $parameters[] = '--' . $key . '=' . escapeshellarg(json_encode($val));
+
+            } else {
+                /**
+                 * We simply escape all other values.
+                 */
+                $parameters[] = '--' . $key . '=' . escapeshellarg($val);
+
+            }
+        }
 
         $queue = new QueueRecord(
             [
                 'execute_at' => date('Y-m-d H:i:s'),
                 'status'     => 'created',
-                'command'    => 'php ' . path('root') . 'console ' . lcfirst(get_class(app())) . ' ' .
-                                ($platformName ? $platformName . ' ' : '') .
-                                $command . ($data ? ' --data=\'' . json_encode($data) . '\'' : ''),
+                'command'    => 'php ' . $path .
+                                ($appName ? ' ' . $appName : '') .
+                                ($platformName ? ' ' . $platformName : '') .
+                                ' ' . $command .
+                                ($parameters ? ' ' . implode(' ', $parameters) : ''),
             ]
         );
         $queue->save();
