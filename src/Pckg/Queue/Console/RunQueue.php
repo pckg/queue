@@ -59,7 +59,7 @@ class RunQueue extends Command
                             );
 
                             $connection = ssh2_connect('93.103.155.205', 22);
-                            ssh2_auth_password($connection, 'schtr4jh', conf('furs.sshpass'));
+                            ssh2_auth_password($connection, 'schtr4jh', config('furs.sshpass'));
 
                             $stream = ssh2_exec($connection, $command);
 
