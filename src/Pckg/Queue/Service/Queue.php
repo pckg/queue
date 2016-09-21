@@ -89,6 +89,12 @@ class Queue
                     $parameters[] = '--' . $key . '=' . escapeshellarg(json_encode($val));
                 }
 
+            } elseif (is_object($val)) {
+                /**
+                 * Serialize object.
+                 */
+                $parameters[] = '--' . $key . '=' . escapeshellarg(str_replace("\x00", '', serialize($val)));
+
             } else {
                 /**
                  * We simply escape all other values.
