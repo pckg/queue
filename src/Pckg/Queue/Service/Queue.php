@@ -93,7 +93,7 @@ class Queue
                 /**
                  * Serialize object.
                  */
-                $parameters[] = '--' . $key . '=' . escapeshellarg(str_replace("\x00", '', serialize($val)));
+                $parameters[] = '--' . $key . '=' . escapeshellarg(str_replace("\x00", '[NULLX00NULL]', serialize($val)));
 
             } else {
                 /**
