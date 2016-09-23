@@ -75,11 +75,6 @@ class RunQueue extends Command
                             $lastLine = substr($streamContent, -41, 40);
 
                         } else {
-                            $command = str_replace(
-                                ['\\\\', '"', ','],
-                                ['\\\\\\\\', '\"', '\,'],
-                                $command
-                            );
                             exec($command, $output);
                             $lastLine = end($output);
 
