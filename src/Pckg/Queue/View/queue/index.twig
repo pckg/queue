@@ -14,9 +14,8 @@
 </div>
 
 <div class="pckg-queue-table">
-    {% verbatim %}
     <script type="text/x-template" id="pckg-queue-table">
-        <h3>{{ table }} ({{ queues.length }})</h3>
+        <h3>${ table } (${ queues.length })</h3>
         <table class="table table-condensed table-stripped" v-if="queues.length">
             <tr>
                 <th>ID</th>
@@ -29,27 +28,26 @@
                 <th>Status</th>
             </tr>
                 <tr v-for="queue in queues" v-bind:class="getClass(queue)">
-                    <td>{{ queue.id }}</td>
-                    <td>{{ queue.created_at }}</td>
-                    <td>{{ queue.execute_at }}</td>
-                    <td>{{ queue.started_at }}</td>
-                    <td>{{ queue.finished_at }}</td>
-                    <td v-bind:title="queue.log">{{ queue.shortLog }}</td>
-                    <td v-bind:title="queue.command">{{ queue.shortCommand }}</td>
-                    <td>{{ queue.executions }} / {{ queue.retries }} / {{ queue.progress }}% / {{ queue.status }}</td>
+                    <td>${ queue.id }</td>
+                    <td>${ queue.created_at }</td>
+                    <td>${ queue.execute_at }</td>
+                    <td>${ queue.started_at }</td>
+                    <td>${ queue.finished_at }</td>
+                    <td v-bind:title="queue.log">${ queue.shortLog }</td>
+                    <td v-bind:title="queue.command">${ queue.shortCommand }</td>
+                    <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
                 </tr>
                 <template v-if="queue.logs">
                     <tr v-for="log in queue.logs">
-                        <td>{{ log.id }}</td>
-                        <td>{{ log.datetime }}</td>
-                        <td>{{ log.log }}</td>
-                        <td>{{ queue.progress }}% / {{ log.status }}</td>
+                        <td>${ log.id }</td>
+                        <td>${ log.datetime }</td>
+                        <td>${ log.log }</td>
+                        <td>${ queue.progress }% / ${ log.status }</td>
                     </tr>
                 </template>
         </table>
         <p v-else>No jobs, no working =)</p>
     </script>
-    {% endverbatim %}
     <script type="text/javascript">
         data.currentQueue = {{ currentQueue.toJSON() | raw }};
         data.nextQueue = {{ nextQueue.toJSON() | raw }};
