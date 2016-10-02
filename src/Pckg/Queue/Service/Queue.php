@@ -66,7 +66,7 @@ class Queue
      */
     public function create($command, $data = [])
     {
-        $appName = lcfirst(get_class(app()));
+        $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $platformName = context()->getOrDefault('platformName');
         $path = path('root') . 'console';
         $parameters = [];
