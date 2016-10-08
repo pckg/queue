@@ -17,9 +17,9 @@ class Queue extends Provider
     {
         return [
             '/bower_components/chart.js/dist/Chart.min.js',
-            'footer' => [
+            //'footer' => [
                 'js/index.js',
-            ],
+            //],
         ];
     }
 

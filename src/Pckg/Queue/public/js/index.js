@@ -1,63 +1,4 @@
-(function (Vue, $, data) {
-
-    Vue.component('pckg-queue-table', {
-        template: '#pckg-queue-table',
-        props: {
-            table: {
-                type: String,
-                required: true,
-                twoWay: true
-            },
-            queues: {
-                type: Array,
-                required: true,
-                twoWay: true
-            },
-            url: {
-                type: String,
-                required: true,
-                twoWay: true
-            }
-        },
-        data: function () {
-            return {};
-        },
-        ready: function () {
-            setInterval(function () {
-                http.getJSON(this.url, function (json) {
-                    this.queues = json;
-                }.bind(this));
-            }.bind(this), 5000);
-        },
-        methods: {
-            getClass: function (queue) {
-                if (queue.status == 'failed_permanently') {
-                    return 'danger';
-                } else if (queue.status == 'failed') {
-                    return 'warning';
-                } else if (queue.status == 'running') {
-                    return 'info';
-                } else if (queue.status == 'started') {
-                    return 'success';
-                } else if (queue.status == 'created') {
-                    return 'text-muted';
-                }
-
-                return '';
-            }
-        }
-    });
-
-    new Vue({
-        el: '.pckg-queue-table',
-        data: function () {
-            return {
-                currentQueue: data.currentQueue,
-                nextQueue: data.nextQueue,
-                prevQueue: data.prevQueue
-            };
-        }
-    });
+$(document).ready(function () {
 
     /**
      * Charts.js
@@ -72,5 +13,20 @@
         data: $('#myChart').data('chartjs')
     });
 
-})
-(Vue, jQuery, data);
+    (function (Vue, data, $) {
+
+        new Vue({
+            el: '#vue-app',
+            data: function () {
+                return {
+                    currentQueue: data.currentQueue,
+                    nextQueue: data.nextQueue,
+                    prevQueue: data.prevQueue,
+                    startedQueue: data.startedQueue
+                };
+            }
+        });
+
+    })(Vue, data, jQuery);
+
+});
