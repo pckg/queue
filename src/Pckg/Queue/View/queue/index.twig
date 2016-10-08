@@ -1,21 +1,22 @@
 <div class="row">
+    <div class="col-md-12">
+        <canvas id="myChart" width="5" height="1"
+                data-chartjs="{{ chart | json_encode }}"></canvas>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-4 bg-success">
         <h2>Successful in last 24h</h2>
         <h3>{{ stat.successful24h }}</h3>
     </div>
     <div class="col-md-4 bg-primary">
         <h2>Currently running</h2>
-        <h3>{{ stat.failedPermanently24h }}</h3>
-    </div>
-    <div class="col-md-4 bg-danger">
-        <h2>Failed in last 24h</h2>
         <h3>{{ stat.currentlyRunning }}</h3>
     </div>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-        <canvas id="myChart" width="400" height="400"></canvas>
+    <div class="col-md-4 bg-danger">
+        <h2>Failed permanently in last 24h</h2>
+        <h3>{{ stat.failedPermanently24h }}</h3>
     </div>
 </div>
 
@@ -33,24 +34,24 @@
                 <th>Command</th>
                 <th>Status</th>
             </tr>
-                <tr v-for="queue in queues" v-bind:class="getClass(queue)">
-                    <td>${ queue.id }</td>
-                    <td>${ queue.created_at }</td>
-                    <td>${ queue.execute_at }</td>
-                    <td>${ queue.started_at }</td>
-                    <td>${ queue.finished_at }</td>
-                    <td v-bind:title="queue.log">${ queue.shortLog }</td>
-                    <td v-bind:title="queue.command">${ queue.shortCommand }</td>
-                    <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
+            <tr v-for="queue in queues" v-bind:class="getClass(queue)">
+                <td>${ queue.id }</td>
+                <td>${ queue.created_at }</td>
+                <td>${ queue.execute_at }</td>
+                <td>${ queue.started_at }</td>
+                <td>${ queue.finished_at }</td>
+                <td v-bind:title="queue.log">${ queue.shortLog }</td>
+                <td v-bind:title="queue.command">${ queue.shortCommand }</td>
+                <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
+            </tr>
+            <template v-if="queue.logs">
+                <tr v-for="log in queue.logs">
+                    <td>${ log.id }</td>
+                    <td>${ log.datetime }</td>
+                    <td>${ log.log }</td>
+                    <td>${ queue.progress }% / ${ log.status }</td>
                 </tr>
-                <template v-if="queue.logs">
-                    <tr v-for="log in queue.logs">
-                        <td>${ log.id }</td>
-                        <td>${ log.datetime }</td>
-                        <td>${ log.log }</td>
-                        <td>${ queue.progress }% / ${ log.status }</td>
-                    </tr>
-                </template>
+            </template>
         </table>
         <p v-else>No jobs, no working =)</p>
     </script>
@@ -61,8 +62,10 @@
         data.startedQueue = {{ startedQueue.toJSON() | raw }};
     </script>
 
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/current'" :table="'Current jobs'" :queues="currentQueue"></pckg-queue-table>
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/started'" :table="'Started jobs'" :queues="startedQueue"></pckg-queue-table>
+    <pckg-queue-table :url="'/dev.php/ajax/jobs/current'" :table="'Current jobs'"
+                      :queues="currentQueue"></pckg-queue-table>
+    <pckg-queue-table :url="'/dev.php/ajax/jobs/started'" :table="'Started jobs'"
+                      :queues="startedQueue"></pckg-queue-table>
     <pckg-queue-table :url="'/dev.php/ajax/jobs/next'" :table="'Next jobs'" :queues="nextQueue"></pckg-queue-table>
     <pckg-queue-table :url="'/dev.php/ajax/jobs/prev'" :table="'Previous jobs'" :queues="prevQueue"></pckg-queue-table>
 </div>

@@ -34,6 +34,7 @@ class Queue extends Controller
                     ),
                     'currentlyRunning'     => $this->queueService->getTotalByStatusAndTime('running', '1 day'),
                 ],
+                'chart'        => $this->queueService->getChartData(),
             ]
         );
     }

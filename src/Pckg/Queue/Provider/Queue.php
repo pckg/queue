@@ -16,7 +16,7 @@ class Queue extends Provider
     public function assets()
     {
         return [
-            'bower_components/chart.js/dist/Chart.min.js',
+            '/bower_components/chart.js/dist/Chart.min.js',
             'footer' => [
                 'js/index.js',
             ],

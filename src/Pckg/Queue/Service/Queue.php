@@ -1,5 +1,7 @@
 <?php namespace Pckg\Queue\Service;
 
+use Carbon\Carbon;
+use Pckg\Collection;
 use Pckg\Database\Query\Raw;
 use Pckg\Queue\Entity\Queue as QueueEntity;
 use Pckg\Queue\Record\Queue as QueueRecord;
@@ -56,6 +58,86 @@ class Queue
                            )
                            ->status(['created', 'failed'])
                            ->all();
+    }
+
+    public function getChartData()
+    {
+        $minDate = date('Y-m-d', strtotime('-3 months'));
+        $maxDate = date('Y-m-d', strtotime('+1 day'));
+
+        $data = (new QueueEntity())
+            ->select(
+                [
+                    'status',
+                    'week'  => 'WEEKOFYEAR(created_at)',
+                    'year'  => 'YEAR(created_at)',
+                    'count' => 'COUNT(id)',
+                ]
+            )
+            ->groupBy('WEEKOFYEAR(created_at), YEAR(year), status')
+            ->where('created_at', $minDate, '>')
+            ->all();
+
+        $date = new Carbon($minDate);
+        $times = [];
+        /**
+         * Prepare times.
+         */
+        while ($maxDate > $date) {
+            $times[$date->year . '-' . $date->weekOfYear] = [];
+            $date->addDays(7);
+        }
+
+        $statuses = [];
+        $data->each(
+            function(QueueRecord $queue) use (&$times, &$statuses) {
+                $times[$queue->year . '-' . $queue->week][$queue->status] = $queue->count;
+                $statuses[$queue->status][$queue->year . '-' . $queue->week] = $queue->count;
+            }
+        );
+
+        $chart = [
+            'labels'   => array_keys($times),
+            'datasets' => [],
+        ];
+
+        $colors = [
+            'finished'           => 'rgba(0, 255, 0, 0.33)',
+            'failed_permanently' => 'rgba(255, 0, 0, 0.33)',
+            'created'            => 'rgba(0, 0, 255, 0.33)',
+            'skipped_unique'     => 'rgba(100, 100, 100, 0.33)',
+            'total'              => 'rgba(50, 50, 50, 0.33)',
+        ];
+        foreach ($statuses as $status => $statusTimes) {
+            $dataset = [
+                'label'           => $status,
+                'data'            => [],
+                'borderColor'     => $colors[$status],
+                'backgroundColor' => 'transparent',
+                'borderWidth'     => 1,
+            ];
+            foreach ($times as $time => $timeStatuses) {
+                $dataset['data'][] = $statusTimes[$time] ?? 0;
+            }
+            $chart['datasets'][] = $dataset;
+        }
+        $dataset = [
+            'label'           => 'total',
+            'data'            => [],
+            'borderColor'     => $colors['total'],
+            'backgroundColor' => 'transparent',
+            'borderWidth'     => 1,
+        ];
+        foreach ($times as $time => $statuses) {
+            $total = 0;
+            foreach ($statuses as $status) {
+                $total += $status;
+            }
+            $dataset['data'][] = $total;
+        }
+        $chart['datasets'][] = $dataset;
+
+        return $chart;
     }
 
     /**
