@@ -139,4 +139,16 @@ class Queue extends Record
         return $this;
     }
 
+    public function after($prev = null)
+    {
+        if (!$prev) {
+            return $this;
+        }
+        
+        $this->waiting_id = $prev->id;
+        $this->save();
+
+        return $this;
+    }
+
 }
