@@ -1,12 +1,5 @@
 $(document).ready(function () {
 
-    /**
-     * Charts.js
-     */
-    function newDate(days) {
-        return moment().add(days, 'd');
-    }
-
     var ctx = document.getElementById("myChart");
     var myChart = new Chart(ctx, {
         type: 'line',
