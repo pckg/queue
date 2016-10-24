@@ -1,6 +1,7 @@
 <?php namespace Pckg\Queue\Service;
 
 use Carbon\Carbon;
+use Derive\Platform\Record\Platform;
 use Pckg\Collection;
 use Pckg\Database\Query\Raw;
 use Pckg\Queue\Entity\Queue as QueueEntity;
@@ -146,10 +147,12 @@ class Queue
      *
      * @return QueueRecord
      */
-    public function create($command, $data = [])
+    public function create($command, $data = [], Platform $platform = null)
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
-        $platformName = context()->getOrDefault('platformName');
+        $platformName = $platform
+            ? $platform->title
+            : context()->getOrDefault('platformName');
         $path = path('root') . 'console';
         $parameters = [];
         foreach ($data as $key => $val) {
