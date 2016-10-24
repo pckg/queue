@@ -53,13 +53,13 @@ class RunQueue extends Command
                     } else {
                         if (strpos($command, 'furs:confirm')) {
                             $command = str_replace(
-                                ['/www/schtr4jh/derive.foobar.si/htdocs/'],
-                                ['/www/schtr4jh/bob.pckg.derive/htdocs/'],
+                                ['/www/schtr4jh/derive.foobar.si/htdocs/', '/www/schtr4jh/beta.derive.foobar.si/htdocs/'],
+                                '/www/schtr4jh/bob.pckg.derive/htdocs/',
                                 $command
                             );
 
-                            $connection = ssh2_connect('93.103.155.205', 22);
-                            ssh2_auth_password($connection, 'schtr4jh', config('furs.sshpass'));
+                            $connection = ssh2_connect(config('furs.sship'), 22);
+                            ssh2_auth_password($connection, config('furs.sshuser'), config('furs.sshpass'));
 
                             $stream = ssh2_exec($connection, $command);
 
