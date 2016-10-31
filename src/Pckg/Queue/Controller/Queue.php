@@ -22,6 +22,7 @@ class Queue extends Controller
         return view(
             'queue/index',
             [
+                'manualQueue'  => $this->queueService->getNextManual(),
                 'nextQueue'    => $this->queueService->getNext(),
                 'currentQueue' => $this->queueService->getCurrent(),
                 'prevQueue'    => $this->queueService->getPrev(),
@@ -52,6 +53,9 @@ class Queue extends Controller
 
         } else if ($type == 'started') {
             return $this->queueService->getStarted();
+
+        } else if ($type == 'manual') {
+            return $this->queueService->getNextManual();
 
         }
 

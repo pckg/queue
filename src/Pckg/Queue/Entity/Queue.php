@@ -56,6 +56,7 @@ class Queue extends Entity
      * @return $this
      *
      * Statuses:
+     *  - manual - queue was added, waiting for nanual execution
      *  - created - queue was added, waiting for execution in future
      *  - started - queue was started, waiting for execution
      *  - running - queue is running, waiting for result

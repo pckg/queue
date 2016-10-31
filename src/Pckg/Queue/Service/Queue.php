@@ -32,9 +32,14 @@ class Queue
         return $this->queue->future()->withLogs()->orderBy('execute_at ASC')->count()->all();
     }
 
+    public function getNextManual()
+    {
+        return $this->queue->status('manual')->withLogs()->orderBy('execute_at ASC')->count()->all();
+    }
+
     public function getCurrent()
     {
-        return $this->queue->current()->withLogs()->orderBy('started_at DESC')->count()->all();;
+        return $this->queue->current()->withLogs()->orderBy('started_at DESC')->count()->all();
     }
 
     public function getPrev()
@@ -147,7 +152,7 @@ class Queue
      *
      * @return QueueRecord
      */
-    public function create($command, $data = [], Platform $platform = null)
+    public function create($command, $data = [], Platform $platform = null, $status = 'created')
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $platformName = $platform
@@ -192,7 +197,7 @@ class Queue
         $queue = new QueueRecord(
             [
                 'execute_at' => date('Y-m-d H:i:s'),
-                'status'     => 'created',
+                'status'     => $status,
                 'command'    => 'php ' . $path .
                                 ($appName ? ' ' . $appName : '') .
                                 ($platformName ? ' ' . $platformName : '') .

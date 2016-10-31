@@ -6,17 +6,21 @@
 </div>
 
 <div class="row">
-    <div class="col-md-4 bg-success">
+    <div class="col-md-3 bg-success">
         <h2>Successful in last 24h</h2>
         <h3>{{ stat.successful24h }}</h3>
     </div>
-    <div class="col-md-4 bg-primary">
+    <div class="col-md-3 bg-primary">
         <h2>Currently running</h2>
         <h3>{{ stat.currentlyRunning }}</h3>
     </div>
-    <div class="col-md-4 bg-danger">
+    <div class="col-md-3 bg-danger">
         <h2>Failed permanently in last 24h</h2>
         <h3>{{ stat.failedPermanently24h }}</h3>
+    </div>
+    <div class="col-md-3 bg-danger">
+        <h2>Manual execution</h2>
+        <h3>{{ manualQueue.count() }}</h3>
     </div>
 </div>
 
@@ -33,6 +37,7 @@
                 <th>Log</th>
                 <th>Command</th>
                 <th>Status</th>
+                <th v-if=manual></th>
             </tr>
             <tr v-for="queue in queues" v-bind:class="getClass(queue)">
                 <td>${ queue.id }</td>
@@ -43,6 +48,7 @@
                 <td v-bind:title="queue.log">${ queue.shortLog }</td>
                 <td v-bind:title="queue.command">${ queue.shortCommand }</td>
                 <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
+                <td v-if="manual"><a href="#" class="btn btn-xs"><i class="fa fa-play"></i></a></td>
             </tr>
             <template v-if="queue.logs">
                 <tr v-for="log in queue.logs">
@@ -61,13 +67,15 @@
         data.nextQueue = {{ nextQueue.toJSON() | raw }};
         data.prevQueue = {{ prevQueue.toJSON() | raw }};
         data.startedQueue = {{ startedQueue.toJSON() | raw }};
+        data.manualQueue = {{ manualQueue.toJSON() | raw }};
 
         Vue.component('pckg-queue-table', {
             template: '#pckg-queue-table',
             props: {
                 table: null,
                 queues: [],
-                url: null
+                url: null,
+                manual: false
             },
             data: function () {
                 return {};
@@ -98,6 +106,9 @@
             }
         });
     </script>
+
+    <pckg-queue-table :url="'/dev.php/ajax/jobs/manual'" :table="'Manual jobs'"
+                      :queues="manualQueue" :manual="true"></pckg-queue-table>
 
     <pckg-queue-table :url="'/dev.php/ajax/jobs/current'" :table="'Current jobs'"
                       :queues="currentQueue"></pckg-queue-table>
