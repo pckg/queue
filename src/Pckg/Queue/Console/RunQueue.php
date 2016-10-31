@@ -51,7 +51,7 @@ class RunQueue extends Command
                         exec('timeout -k 60 ' . $timeout . ' ' . $command, $output);
 
                     } else {
-                        if (strpos($command, 'furs:confirm')) {
+                        if (strpos($command, 'furs:')) {
                             $command = str_replace(
                                 ['/www/schtr4jh/derive.foobar.si/htdocs/', '/www/schtr4jh/beta.derive.foobar.si/htdocs/'],
                                 '/www/schtr4jh/bob.pckg.derive/htdocs/',
