@@ -107,18 +107,18 @@
         });
     </script>
 
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/manual'" :table="'Manual jobs'"
+    <pckg-queue-table :url="'/ajax/jobs/manual'" :table="'Manual jobs'"
                       :queues="manualQueue" :manual="true"></pckg-queue-table>
 
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/current'" :table="'Current jobs'"
+    <pckg-queue-table :url="'/ajax/jobs/current'" :table="'Current jobs'"
                       :queues="currentQueue"></pckg-queue-table>
 
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/started'" :table="'Started jobs'"
+    <pckg-queue-table :url="'/ajax/jobs/started'" :table="'Started jobs'"
                       :queues="startedQueue"></pckg-queue-table>
 
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/next'" :table="'Next jobs'"
+    <pckg-queue-table :url="'/ajax/jobs/next'" :table="'Next jobs'"
                       :queues="nextQueue"></pckg-queue-table>
 
-    <pckg-queue-table :url="'/dev.php/ajax/jobs/prev'" :table="'Previous jobs'"
+    <pckg-queue-table :url="'/ajax/jobs/prev'" :table="'Previous jobs'"
                       :queues="prevQueue"></pckg-queue-table>
 </div>
