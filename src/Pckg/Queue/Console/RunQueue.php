@@ -4,6 +4,7 @@ use Exception;
 use Pckg\Framework\Console\Command;
 use Pckg\Queue\Record\Queue as QueueRecord;
 use Pckg\Queue\Service\Queue;
+use Throwable;
 
 class RunQueue extends Command
 {
@@ -53,7 +54,10 @@ class RunQueue extends Command
                     } else {
                         if (strpos($command, 'furs:')) {
                             $command = str_replace(
-                                ['/www/schtr4jh/derive.foobar.si/htdocs/', '/www/schtr4jh/beta.derive.foobar.si/htdocs/'],
+                                [
+                                    '/www/schtr4jh/derive.foobar.si/htdocs/',
+                                    '/www/schtr4jh/beta.derive.foobar.si/htdocs/',
+                                ],
                                 '/www/schtr4jh/bob.pckg.derive/htdocs/',
                                 $command
                             );
@@ -94,7 +98,7 @@ class RunQueue extends Command
 
                         throw new Exception('Job failed');
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $queue->changeStatus(
                         'failed_permanently',
                         [
