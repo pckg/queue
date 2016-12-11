@@ -3,15 +3,15 @@
 class Job
 {
 
-    protected $date;
-
-    protected $time;
-
-    protected $when;
-
     protected $command;
 
     protected $data = [];
+
+    protected $when = [];
+
+    protected $days = [];
+
+    protected $times = [];
 
     public function __construct($command, $data = [])
     {
@@ -28,33 +28,47 @@ class Job
 
     public function everyDay()
     {
-        $this->date = '*';
+        $this->days = [];
 
         return $this;
     }
 
-    public function everyHour()
+    public function onDays($days = [])
     {
+        $this->days = $days;
 
+        return $this;
     }
 
-    public function everyMinute()
+    public function everyWorkDay()
     {
-
+        return $this->onDays([1, 2, 3, 4, 5]);
     }
 
     public function at($time)
     {
-        $this->time = $time;
+        $this->times[] = $time;
 
         return $this;
     }
 
     public function shouldBeRun()
     {
-        if ($this->when && !$this->when()) {
+        foreach ($this->when as $when) {
+            if (!$when()) {
+                return false;
+            }
+        }
+
+        if ($this->days && !in_array(date('N'), $this->days)) {
             return false;
         }
+
+        if ($this->times && !in_array(date('H:i'), $this->times) && !in_array(date('G:i'), $this->times)) {
+            return false;
+        }
+
+        return true;
     }
 
 }
