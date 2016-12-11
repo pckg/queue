@@ -19,6 +19,19 @@ class Job
         $this->data = $data;
     }
 
+    public function getFullCommand()
+    {
+        $appName = config('pckg.queue.app', lcfirst(get_class(app())));
+        $path = path('root') . 'console';
+        $parameters = [];
+        $command = 'php ' . $path .
+                   ($appName ? ' ' . $appName : '') .
+                   ' ' . $this->command .
+                   ($parameters ? ' ' . implode(' ', $parameters) : '');
+
+        return $command;
+    }
+
     public function when(callable $when)
     {
         $this->when = $when;
