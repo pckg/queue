@@ -11,7 +11,11 @@ class Job
 
     protected $days = [];
 
+    protected $minutes = [];
+
     protected $times = [];
+
+    protected $long = false;
 
     public function __construct($command, $data = [])
     {
@@ -46,6 +50,13 @@ class Job
         return $this;
     }
 
+    public function everyMinute()
+    {
+        $this->days = [];
+
+        return $this;
+    }
+
     public function onDays($days = [])
     {
         $this->days = $days;
@@ -65,6 +76,13 @@ class Job
         return $this;
     }
 
+    public function long($long = true)
+    {
+        $this->long = $long;
+
+        return $this;
+    }
+
     public function shouldBeRun()
     {
         foreach ($this->when as $when) {
@@ -74,6 +92,10 @@ class Job
         }
 
         if ($this->days && !in_array(date('N'), $this->days)) {
+            return false;
+        }
+
+        if ($this->minutes && !in_array(date('i'), $this->minutes)) {
             return false;
         }
 
