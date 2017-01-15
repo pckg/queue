@@ -144,8 +144,16 @@ class Queue extends Record
         if (!$prev) {
             return $this;
         }
-        
+
         $this->waiting_id = $prev->id;
+        $this->save();
+
+        return $this;
+    }
+
+    public function delay($delay)
+    {
+        $this->execute_at = date('Y-m-d H:i:s', strtotime($delay));
         $this->save();
 
         return $this;
