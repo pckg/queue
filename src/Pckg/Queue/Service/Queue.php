@@ -167,7 +167,7 @@ class Queue
                 /**
                  * Array of values should be handled differently.
                  */
-                if (isset($val[0]) && isset($val[count($val) - 1])) {
+                if (isArrayList($val)) {
                     foreach ($val as $subval) {
                         $parameters[] = '--' . $key . '=' . escapeshellarg($subval);
                     }
