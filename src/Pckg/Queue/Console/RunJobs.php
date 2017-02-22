@@ -3,6 +3,7 @@
 use Exception;
 use Pckg\Collection;
 use Pckg\Framework\Console\Command;
+use Pckg\Manager\Job as JobManager;
 use Pckg\Queue\Service\Cron\Job;
 use Pckg\Queue\Service\Queue;
 use Throwable;
@@ -22,7 +23,7 @@ class RunJobs extends Command
     public function handle()
     {
         $this->output('Starting cronjob at ' . date('Y-m-d H:i:s'));
-        $jobs = new Collection();
+        $jobs = new Collection(context(JobManager::class)->all());
         $jobs->each(
             function(Job $job) {
                 if ($job->shouldBeRun()) {
@@ -34,7 +35,8 @@ class RunJobs extends Command
                     $command .= ' && echo ' . $sha1Id;
                     $output = [];
                     try {
-                        exec($command, $output);
+                        $output = [$sha1Id];
+                        //exec($command, $output);
                         $lastLine = end($output);
                     } catch (Throwable $e) {
                         throw new Exception('Error executing cronjob!');
@@ -42,7 +44,6 @@ class RunJobs extends Command
                         if ($lastLine != $sha1Id) {
                             throw new Exception('Error executing cronjob, sha1 mismatch!');
                         }
-                        d($output);
                     }
                 }
             }
