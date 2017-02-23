@@ -29,13 +29,16 @@ class RunJobs extends Command
                 if ($job->shouldBeRun()) {
                     $command = $job->getFullCommand();
                     $this->output(
-                        date('Y-m-d H:i:s') . ' - Running ' . substr(str_replace(path('root'), '', $command), 0, 60)
+                        date('Y-m-d H:i:s') . ' - Running ' . substr(str_replace(path('root'), '', $command), 0, 72)
                     );
                     $sha1Id = sha1(microtime());
                     $command .= ' && echo ' . $sha1Id;
                     $output = [];
                     try {
                         $output = [$sha1Id];
+                        /**
+                         * Enable this when crojobs are tested for production!
+                         */
                         //exec($command, $output);
                         $lastLine = end($output);
                     } catch (Throwable $e) {
