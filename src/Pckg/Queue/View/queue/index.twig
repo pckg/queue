@@ -26,7 +26,6 @@
 
 <div class="#vue-pckg-queue-table">
     <script type="text/x-template" id="pckg-queue-table">
-        <div>
         <h3>${ table } (${ queues.length })</h3>
         <table class="table table-condensed table-stripped" v-if="queues.length">
             <tr>
@@ -61,7 +60,6 @@
             </template>
         </table>
         <p v-else>No jobs, no working =)</p>
-        </div>
     </script>
 
     <script type="text/javascript">
@@ -82,14 +80,12 @@
             data: function () {
                 return {};
             },
-            mounted: function () {
-                this.$nextTick(function() {
-                    setInterval(function () {
-                        http.getJSON(this.url, function (json) {
-                            this.queues = json;
-                        }.bind(this));
-                    }.bind(this), 5000);
-                }.bind(this));
+            ready: function () {
+                setInterval(function () {
+                    http.getJSON(this.url, function (json) {
+                        this.queues = json;
+                    }.bind(this));
+                }.bind(this), 5000);
             },
             methods: {
                 getClass: function (queue) {
