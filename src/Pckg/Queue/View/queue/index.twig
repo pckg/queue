@@ -40,14 +40,14 @@
                 <th>Status</th>
                 <th v-if=manual></th>
             </tr>
-            <tr v-for="queue in queues" v-bind:class="getClass(queue)">
+            <tr v-for="queue in queues" :class="getClass(queue)">
                 <td>${ queue.id }</td>
                 <td>${ queue.created_at }</td>
                 <td>${ queue.execute_at }</td>
                 <td>${ queue.started_at }</td>
                 <td>${ queue.finished_at }</td>
-                <td v-bind:title="queue.log">${ queue.shortLog }</td>
-                <td v-bind:title="queue.command">${ queue.shortCommand }</td>
+                <td :title="queue.log">${ queue.shortLog }</td>
+                <td :title="queue.command">${ queue.shortCommand }</td>
                 <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
                 <td v-if="manual"><a href="#" class="btn btn-xs"><i class="fa fa-play"></i></a></td>
             </tr>
