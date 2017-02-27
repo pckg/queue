@@ -72,6 +72,7 @@
         data.manualQueue = {{ manualQueue.toJSON() | raw }};
 
         Vue.component('pckg-queue-table', {
+            mixins: [pckgDelimiters],
             template: '#pckg-queue-table',
             props: {
                 table: null,
