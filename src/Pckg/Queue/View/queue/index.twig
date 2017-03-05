@@ -26,6 +26,7 @@
 
 <div class="#vue-pckg-queue-table">
     <script type="text/x-template" id="pckg-queue-table">
+        <div>
         <h3>${ table } (${ queues.length })</h3>
         <table class="table table-condensed table-stripped" v-if="queues.length">
             <tr>
@@ -39,14 +40,14 @@
                 <th>Status</th>
                 <th v-if=manual></th>
             </tr>
-            <tr v-for="queue in queues" v-bind:class="getClass(queue)">
+            <tr v-for="queue in queues" :class="getClass(queue)">
                 <td>${ queue.id }</td>
                 <td>${ queue.created_at }</td>
                 <td>${ queue.execute_at }</td>
                 <td>${ queue.started_at }</td>
                 <td>${ queue.finished_at }</td>
-                <td v-bind:title="queue.log">${ queue.shortLog }</td>
-                <td v-bind:title="queue.command">${ queue.shortCommand }</td>
+                <td :title="queue.log">${ queue.shortLog }</td>
+                <td :title="queue.command">${ queue.shortCommand }</td>
                 <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
                 <td v-if="manual"><a href="#" class="btn btn-xs"><i class="fa fa-play"></i></a></td>
             </tr>
@@ -60,6 +61,7 @@
             </template>
         </table>
         <p v-else>No jobs, no working =)</p>
+        </div>
     </script>
 
     <script type="text/javascript">
@@ -70,6 +72,7 @@
         data.manualQueue = {{ manualQueue.toJSON() | raw }};
 
         Vue.component('pckg-queue-table', {
+            mixins: [pckgDelimiters],
             template: '#pckg-queue-table',
             props: {
                 table: null,
@@ -80,12 +83,14 @@
             data: function () {
                 return {};
             },
-            ready: function () {
-                setInterval(function () {
-                    http.getJSON(this.url, function (json) {
-                        this.queues = json;
-                    }.bind(this));
-                }.bind(this), 5000);
+            mounted: function () {
+                this.$nextTick(function() {
+                    setInterval(function () {
+                        http.getJSON(this.url, function (json) {
+                            this.queues = json;
+                        }.bind(this));
+                    }.bind(this), 5000);
+                }.bind(this));
             },
             methods: {
                 getClass: function (queue) {
