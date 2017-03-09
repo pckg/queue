@@ -1,6 +1,6 @@
 {
   "name": "pckg/queue",
-  "description": "Queue",
+  "description": "Queue, cronjobs and tasks simplified",
   "homepage": "https://github.com/pckg/queue",
   "license": "MIT",
   "authors": [
