@@ -52,7 +52,7 @@ class Job
 
     public function everyMinute()
     {
-        $this->days = [];
+        $this->minutes = [];
 
         return $this;
     }

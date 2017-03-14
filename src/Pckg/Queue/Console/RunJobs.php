@@ -39,7 +39,7 @@ class RunJobs extends Command
                         /**
                          * Enable this when crojobs are tested for production!
                          */
-                        //exec($command, $output);
+                        exec($command, $output);
                         $lastLine = end($output);
                     } catch (Throwable $e) {
                         throw new Exception('Error executing cronjob!');
