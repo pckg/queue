@@ -9,8 +9,6 @@ class QueueLogs extends Entity
 
     protected $record = QueueLog::class;
 
-    protected $repositoryName = Repository::class . '.queue';
-
     public function queue()
     {
         return $this->belongsTo(Queue::class)

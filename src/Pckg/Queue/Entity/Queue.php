@@ -9,8 +9,6 @@ class Queue extends Entity
 
     protected $record = QueueRecord::class;
 
-    protected $repositoryName = Repository::class . '.queue';
-
     public function logs()
     {
         return $this->hasMany(QueueLogs::class)
