@@ -79,6 +79,9 @@ class RunQueue extends Command
                             $lastLine = substr($streamContent, -41, 40);
 
                         } else {
+                            /**
+                             * @T00D00 - execute in current scope if possible, this will optimize things a little bit.
+                             */
                             exec($command, $output);
                             $lastLine = end($output);
 
