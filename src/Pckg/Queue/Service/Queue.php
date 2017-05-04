@@ -1,7 +1,6 @@
 <?php namespace Pckg\Queue\Service;
 
 use Carbon\Carbon;
-use Pckg\Collection;
 use Pckg\Database\Query\Raw;
 use Pckg\Queue\Entity\Queue as QueueEntity;
 use Pckg\Queue\Record\Queue as QueueRecord;
@@ -162,7 +161,6 @@ class Queue
                  * We're passing attribute, option without value or already encoded part of command.
                  */
                 $parameters[] = $val;
-
             } elseif (is_array($val)) {
                 /**
                  * Array of values should be handled differently.
@@ -174,30 +172,28 @@ class Queue
                 } else {
                     $parameters[] = '--' . $key . '=' . escapeshellarg(json_encode($val));
                 }
-
             } elseif (is_object($val)) {
                 /**
                  * Serialize object.
                  */
                 $parameters[] = '--' . $key . '=' . escapeshellarg(base64_encode(serialize($val)));
-
             } else {
                 /**
                  * We simply escape all other values.
                  */
                 $parameters[] = '--' . $key . '=' . escapeshellarg($val);
-
             }
         }
 
+        $command = 'php ' . $path .
+                   ($appName ? ' ' . $appName : '') .
+                   ' ' . $command .
+                   ($parameters ? ' ' . implode(' ', $parameters) : '');
         $queue = new QueueRecord(
             [
                 'execute_at' => date('Y-m-d H:i:s'),
-                'status'     => $status,
-                'command'    => 'php ' . $path .
-                                ($appName ? ' ' . $appName : '') .
-                                ' ' . $command .
-                                ($parameters ? ' ' . implode(' ', $parameters) : ''),
+                'status'     => config('pckg.queue.enabled') ? $status : 'disabled',
+                'command'    => $command,
             ]
         );
         $queue->save();
