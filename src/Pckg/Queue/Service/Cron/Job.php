@@ -1,5 +1,7 @@
 <?php namespace Pckg\Queue\Service\Cron;
 
+use Symfony\Component\Process\Process;
+
 class Job
 {
 
@@ -21,6 +23,11 @@ class Job
     {
         $this->command = $command;
         $this->data = $data;
+    }
+
+    public function getCommand()
+    {
+        return $this->command;
     }
 
     public function getFullCommand()
@@ -104,6 +111,19 @@ class Job
         }
 
         return true;
+    }
+
+    public function run()
+    {
+        $output = null;
+        $error = null;
+
+        $command = $this->getFullCommand();
+        $process = new Process($command);
+        $process->setTimeout(60);
+        $process->mustRun();
+
+        return $process;
     }
 
 }

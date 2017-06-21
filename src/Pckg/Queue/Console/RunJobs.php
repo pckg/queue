@@ -1,6 +1,5 @@
 <?php namespace Pckg\Queue\Console;
 
-use Exception;
 use Pckg\Collection;
 use Pckg\Framework\Console\Command;
 use Pckg\Manager\Job as JobManager;
@@ -27,26 +26,21 @@ class RunJobs extends Command
         $jobs->each(
             function(Job $job) {
                 if ($job->shouldBeRun()) {
-                    $command = $job->getFullCommand();
-                    $this->output(
-                        date('Y-m-d H:i:s') . ' - Running ' . substr(str_replace(path('root'), '', $command), 0, 72)
-                    );
-                    $sha1Id = sha1(microtime());
-                    $command .= ' && echo ' . $sha1Id;
-                    $output = [];
+                    $this->output('Running ' . $job->getCommand());
                     try {
-                        $output = [$sha1Id];
+                        $process = $job->run();
                         /**
-                         * Enable this when crojobs are tested for production!
+                         * @T00D00 - log output and error output
                          */
-                        exec($command, $output);
-                        $lastLine = end($output);
-                    } catch (Throwable $e) {
-                        throw new Exception('Error executing cronjob!');
-                    } finally {
-                        if ($lastLine != $sha1Id) {
-                            throw new Exception('Error executing cronjob, sha1 mismatch!');
+                        if ($output = $process->getOutput()) {
+                            $this->output("Output: " . $output);
                         }
+
+                        if ($errorOutput = $process->getErrorOutput()) {
+                            $this->output("Error:" . $errorOutput);
+                        }
+                    } catch (Throwable $e) {
+                        $this->output("Exception: " . exception($e));
                     }
                 }
             }
