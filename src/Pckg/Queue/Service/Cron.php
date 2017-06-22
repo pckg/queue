@@ -8,9 +8,9 @@ class Cron
     /**
      * @return Job
      */
-    public static function createJob($command, $data = [], $name = null)
+    public static function createJob($command, $name = null)
     {
-        $job = new Job($command, $data, $name);
+        $job = new Job($command, $name);
 
         return $job;
     }

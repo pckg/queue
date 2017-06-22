@@ -21,10 +21,9 @@ class Job
 
     protected $name = null;
 
-    public function __construct($command, $data = [], $name = null)
+    public function __construct($command, $name = null)
     {
         $this->command = $command;
-        $this->data = $data;
         $this->name = $name ?? $command;
     }
 
