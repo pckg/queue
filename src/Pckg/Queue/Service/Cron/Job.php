@@ -19,15 +19,23 @@ class Job
 
     protected $long = false;
 
-    public function __construct($command, $data = [])
+    protected $name = null;
+
+    public function __construct($command, $data = [], $name = null)
     {
         $this->command = $command;
         $this->data = $data;
+        $this->name = $name ?? $command;
     }
 
     public function getCommand()
     {
         return $this->command;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 
     public function getFullCommand()
@@ -124,6 +132,66 @@ class Job
         $process->mustRun();
 
         return $process;
+    }
+
+    public function getNextExecutionDatetime()
+    {
+        if (!$this->days && !$this->minutes && !$this->times) {
+            // everyMinute()
+            return 'in less than a minute';
+        } elseif (!$this->days && !$this->minutes) {
+            // everyDay()->at()
+            $time = end($this->times);
+            if (date('H:i') > $time) {
+                return 'tommorow at ' . $time;
+            } else {
+                return 'today at ' . $time;
+            }
+        } else if ($this->days) {
+            // onDays()->at()
+            $day = end($this->days);
+            $time = end($this->times);
+
+            if (date('N') == $day) {
+                if (date('H:i') > $time) {
+                    return 'next ' . date('l') . ' at ' . $time;
+                } else {
+                    return 'today at ' . $time;
+                }
+            } else {
+                return 'next ' . date('l', strtotime((7 + $day - date('N')) . 'days')) . ' at ' . $time;
+            }
+        }
+    }
+
+    public function getPreviousExecutionDatetime()
+    {
+        if (!$this->days && !$this->minutes && !$this->times) {
+            // everyMinute()
+            return 'in last minute';
+        } elseif (!$this->days && !$this->minutes) {
+            // everyDay()->at()
+            $time = end($this->times);
+            if (date('H:i') > $time) {
+                return 'today at ' . $time;
+            } else {
+                return 'yesterday at ' . $time;
+            }
+        } else if ($this->days) {
+            // onDays()->at()
+            $day = end($this->days);
+            $time = end($this->times);
+
+            if (date('N') == $day) {
+                if (date('H:i') > $time) {
+                    return 'today at ' . $time;
+                } else {
+                    return 'previous ' . date('l') . ' at ' . $time;
+                }
+            } else {
+                return 'previous ' . date('l', strtotime((7 + $day - date('N')) . 'days')) . ' at ' . $time;
+            }
+        }
     }
 
 }

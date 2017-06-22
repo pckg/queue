@@ -2,7 +2,6 @@
 
 use Pckg\Auth\Provider\Auth as AuthProvider;
 use Pckg\Dynamic\Provider\Dynamic as DynamicProvider;
-use Pckg\Framework\Application;
 use Pckg\Framework\Provider;
 use Pckg\Generic\Middleware\EncapsulateResponse;
 use Pckg\Generic\Provider\Generic as GenericProvider;
@@ -18,7 +17,7 @@ class Queue extends Provider
         return [
             '/bower_components/chart.js/dist/Chart.min.js',
             //'footer' => [
-                'js/index.js',
+            'js/index.js',
             //],
         ];
     }
@@ -41,16 +40,19 @@ class Queue extends Provider
                     'controller' => QueueController::class,
                     'view'       => 'index',
                     'name'       => 'pckg.queue.index',
+                    'tags'       => ['group:admin'],
                 ],
                 '/jobs'             => [
                     'controller' => QueueController::class,
                     'view'       => 'index',
                     'name'       => 'pckg.queue.index',
+                    'tags'       => ['group:admin'],
                 ],
                 '/ajax/jobs/[type]' => [
                     'controller' => QueueController::class,
                     'view'       => 'ajax',
                     'name'       => 'pckg.queue.ajax.jobs',
+                    'tags'       => ['group:admin'],
                 ],
             ],
         ];

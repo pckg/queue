@@ -1,0 +1,93 @@
+<script type="text/x-template" id="pckg-queue-table">
+    <div>
+        <h3>${ table } (${ queues.length })</h3>
+        <table class="table table-condensed table-stripped" v-if="queues.length">
+            <tr>
+                <th>ID</th>
+                <th>Created at</th>
+                <th>Execute at</th>
+                <th>Started at</th>
+                <th>Finished at</th>
+                <th>Log</th>
+                <th>Command</th>
+                <th>Status</th>
+                <th v-if=manual></th>
+            </tr>
+            <tr v-for="queue in queues" :class="getClass(queue)">
+                <td>${ queue.id }</td>
+                <td>${ queue.created_at }</td>
+                <td>${ queue.execute_at }</td>
+                <td>${ queue.started_at }</td>
+                <td>${ queue.finished_at }</td>
+                <td :title="queue.log">${ queue.shortLog }</td>
+                <td :title="queue.command">${ queue.shortCommand }</td>
+                <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
+                <td v-if="manual"><a href="#" class="btn btn-xs"><i class="fa fa-play"></i></a></td>
+            </tr>
+            <!--<template v-if="queue.logs">
+                <tr v-for="log in queue.logs">
+                    <td>${ log.id }</td>
+                    <td>${ log.datetime }</td>
+                    <td>${ log.log }</td>
+                    <td>${ queue.progress }% / ${ log.status }</td>
+                </tr>
+            </template>-->
+        </table>
+        <p v-else>No jobs, no working =)</p>
+    </div>
+</script>
+
+<script type="text/javascript">
+    Vue.component('pckg-queue-table', {
+        mixins: [pckgDelimiters],
+        template: '#pckg-queue-table',
+        props: {
+            table: {
+                type: String,
+                default: ''
+            },
+            url: {
+                type: String,
+                default: ''
+            },
+            manual: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data: function () {
+            return {
+                queues: []
+            };
+        },
+        mounted: function () {
+            this.fetchQueue();
+
+            setInterval(function () {
+                this.fetchQueue();
+            }.bind(this), 10000);
+        },
+        methods: {
+            fetchQueue: function () {
+                http.getJSON(this.url, function (json) {
+                    this.queues = json;
+                }.bind(this));
+            },
+            getClass: function (queue) {
+                if (queue.status == 'failed_permanently') {
+                    return 'danger';
+                } else if (queue.status == 'failed') {
+                    return 'warning';
+                } else if (queue.status == 'running') {
+                    return 'info';
+                } else if (queue.status == 'started') {
+                    return 'success';
+                } else if (queue.status == 'created') {
+                    return 'text-muted';
+                }
+
+                return '';
+            }
+        }
+    });
+</script>

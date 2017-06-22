@@ -27,12 +27,12 @@ class Queue
 
     public function getNext()
     {
-        return $this->queue->future()->withLogs()->orderBy('execute_at ASC')->count()->all();
+        return $this->queue->future()->withLogs()->orderBy('execute_at ASC')->count()->limit(50)->all();
     }
 
     public function getNextManual()
     {
-        return $this->queue->status('manual')->withLogs()->orderBy('execute_at ASC')->count()->all();
+        return $this->queue->status('manual')->withLogs()->orderBy('execute_at ASC')->count()->limit(50)->all();
     }
 
     public function getCurrent()
@@ -44,12 +44,12 @@ class Queue
     {
         return $this->queue->status(['finished', 'failed_permanently', 'skipped_unique'])->withLogs()->orderBy(
             'execute_at DESC'
-        )->count()->limit(10)->all();
+        )->count()->limit(20)->all();
     }
 
     public function getStarted()
     {
-        return $this->queue->status(['started'])->withLogs()->count()->all();
+        return $this->queue->status(['started'])->withLogs()->count()->limit(20)->all();
     }
 
     public function getWaiting()
@@ -110,6 +110,7 @@ class Queue
             'failed_permanently' => 'rgba(255, 0, 0, 0.33)',
             'created'            => 'rgba(0, 0, 255, 0.33)',
             'skipped_unique'     => 'rgba(100, 100, 100, 0.33)',
+            'skipped'            => 'rgba(200, 100, 100, 0.33)',
             'total'              => 'rgba(50, 50, 50, 0.33)',
         ];
         foreach ($statuses as $status => $statusTimes) {

@@ -24,106 +24,16 @@
     </div>
 </div>
 
-<div class="#vue-pckg-queue-table">
-    <script type="text/x-template" id="pckg-queue-table">
-        <div>
-        <h3>${ table } (${ queues.length })</h3>
-        <table class="table table-condensed table-stripped" v-if="queues.length">
-            <tr>
-                <th>ID</th>
-                <th>Created at</th>
-                <th>Execute at</th>
-                <th>Started at</th>
-                <th>Finished at</th>
-                <th>Log</th>
-                <th>Command</th>
-                <th>Status</th>
-                <th v-if=manual></th>
-            </tr>
-            <tr v-for="queue in queues" :class="getClass(queue)">
-                <td>${ queue.id }</td>
-                <td>${ queue.created_at }</td>
-                <td>${ queue.execute_at }</td>
-                <td>${ queue.started_at }</td>
-                <td>${ queue.finished_at }</td>
-                <td :title="queue.log">${ queue.shortLog }</td>
-                <td :title="queue.command">${ queue.shortCommand }</td>
-                <td>${ queue.executions } / ${ queue.retries } / ${ queue.progress }% / ${ queue.status }</td>
-                <td v-if="manual"><a href="#" class="btn btn-xs"><i class="fa fa-play"></i></a></td>
-            </tr>
-            <template v-if="queue.logs">
-                <tr v-for="log in queue.logs">
-                    <td>${ log.id }</td>
-                    <td>${ log.datetime }</td>
-                    <td>${ log.log }</td>
-                    <td>${ queue.progress }% / ${ log.status }</td>
-                </tr>
-            </template>
-        </table>
-        <p v-else>No jobs, no working =)</p>
-        </div>
-    </script>
+<div class="vue-pckg-queue-table">
+    {% do _vueManager.addView('Pckg/Queue:queue/_index') %}
 
-    <script type="text/javascript">
-        data.currentQueue = {{ currentQueue.toJSON() | raw }};
-        data.nextQueue = {{ nextQueue.toJSON() | raw }};
-        data.prevQueue = {{ prevQueue.toJSON() | raw }};
-        data.startedQueue = {{ startedQueue.toJSON() | raw }};
-        data.manualQueue = {{ manualQueue.toJSON() | raw }};
+    <pckg-queue-table :url="'/queue/ajax/jobs/manual'" :table="'Manual jobs'" :manual="true"></pckg-queue-table>
 
-        Vue.component('pckg-queue-table', {
-            mixins: [pckgDelimiters],
-            template: '#pckg-queue-table',
-            props: {
-                table: null,
-                queues: [],
-                url: null,
-                manual: false
-            },
-            data: function () {
-                return {};
-            },
-            mounted: function () {
-                this.$nextTick(function() {
-                    setInterval(function () {
-                        http.getJSON(this.url, function (json) {
-                            this.queues = json;
-                        }.bind(this));
-                    }.bind(this), 5000);
-                }.bind(this));
-            },
-            methods: {
-                getClass: function (queue) {
-                    if (queue.status == 'failed_permanently') {
-                        return 'danger';
-                    } else if (queue.status == 'failed') {
-                        return 'warning';
-                    } else if (queue.status == 'running') {
-                        return 'info';
-                    } else if (queue.status == 'started') {
-                        return 'success';
-                    } else if (queue.status == 'created') {
-                        return 'text-muted';
-                    }
+    <pckg-queue-table :url="'/queue/ajax/jobs/current'" :table="'Current jobs'"></pckg-queue-table>
 
-                    return '';
-                }
-            }
-        });
-    </script>
+    <pckg-queue-table :url="'/queue/ajax/jobs/started'" :table="'Started jobs'"></pckg-queue-table>
 
-    <pckg-queue-table :url="'/ajax/jobs/manual'" :table="'Manual jobs'"
-                      :queues="manualQueue" :manual="true"></pckg-queue-table>
+    <pckg-queue-table :url="'/queue/ajax/jobs/next'" :table="'Next jobs'"></pckg-queue-table>
 
-    <pckg-queue-table :url="'/ajax/jobs/current'" :table="'Current jobs'"
-                      :queues="currentQueue"></pckg-queue-table>
-
-    <pckg-queue-table :url="'/ajax/jobs/started'" :table="'Started jobs'"
-                      :queues="startedQueue"></pckg-queue-table>
-
-    <pckg-queue-table :url="'/ajax/jobs/next'" :table="'Next jobs'"
-                      :queues="nextQueue"></pckg-queue-table>
-
-    <pckg-queue-table :url="'/ajax/jobs/prev'" :table="'Previous jobs'"
-                      :queues="prevQueue"></pckg-queue-table>
+    <pckg-queue-table :url="'/queue/ajax/jobs/prev'" :table="'Previous jobs'"></pckg-queue-table>
 </div>

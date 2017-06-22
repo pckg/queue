@@ -44,19 +44,14 @@ class Queue extends Controller
     {
         if ($type == 'next') {
             return $this->queueService->getNext();
-
         } else if ($type == 'current') {
             return $this->queueService->getCurrent();
-
         } else if ($type == 'prev') {
             return $this->queueService->getPrev();
-
         } else if ($type == 'started') {
             return $this->queueService->getStarted();
-
         } else if ($type == 'manual') {
             return $this->queueService->getNextManual();
-
         }
 
         throw new Exception('Type ' . $type . 'not implemented');
