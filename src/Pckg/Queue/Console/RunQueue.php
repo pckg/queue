@@ -40,8 +40,6 @@ class RunQueue extends Command
                 $this->output('#' . $queue->id . ': ' . 'running (' . date('Y-m-d H:i:s') . ')');
                 $queue->changeStatus('running');
 
-                $this->output('#' . $queue->id . ': ' . $queue->command);
-
                 $output = null;
                 $error = null;
 
