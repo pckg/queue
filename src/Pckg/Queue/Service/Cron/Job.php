@@ -125,6 +125,9 @@ class Job
         $output = null;
         $error = null;
 
+        /**
+         * @T00D00 - can we run this in same process, so thing get optimized?
+         */
         $command = $this->getFullCommand();
         $process = new Process($command);
         $process->setTimeout(60);
