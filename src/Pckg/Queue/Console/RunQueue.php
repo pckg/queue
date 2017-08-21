@@ -1,5 +1,6 @@
 <?php namespace Pckg\Queue\Console;
 
+use Derive\Notification\Service\Notifier;
 use Pckg\Framework\Console\Command;
 use Pckg\Queue\Record\Queue as QueueRecord;
 use Pckg\Queue\Service\Queue;
@@ -35,8 +36,9 @@ class RunQueue extends Command
         /**
          * Execute jobs.
          */
+        $failed = 0;
         $waitingQueue->each(
-            function(QueueRecord $queue) {
+            function(QueueRecord $queue) use (&$failed) {
                 $this->output('#' . $queue->id . ': ' . 'running (' . date('Y-m-d H:i:s') . ')');
                 $queue->changeStatus('running');
 
@@ -57,6 +59,7 @@ class RunQueue extends Command
                     $output = $process->getOutput();
                     $error = $process->getErrorOutput();
                 } catch (Throwable $e) {
+                    $failed++;
                     $exception = $e;
                 }
 
@@ -96,9 +99,15 @@ class RunQueue extends Command
                         ]
                     );
                 }
-            },
-            false
+            }
         );
+
+        if ($failed) {
+            (new Notifier())
+                ->statuses(1)
+                ->message($failed . ' queue(s) failed')
+                ->notify();
+        }
     }
 
 }

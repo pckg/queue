@@ -1,5 +1,6 @@
 <?php namespace Pckg\Queue\Console;
 
+use Derive\Notification\Service\Notifier;
 use Pckg\Collection;
 use Pckg\Framework\Console\Command;
 use Pckg\Manager\Job as JobManager;
@@ -32,10 +33,11 @@ class RunJobs extends Command
 
         $jobs = new Collection(context(JobManager::class)->all());
         $e = null;
+        $failed = 0;
 
         try {
             $jobs->each(
-                function(Job $job) {
+                function(Job $job) use (&$failed) {
                     /**
                      * Touch file so parent process knows that we're not stuck.
                      */
@@ -52,6 +54,7 @@ class RunJobs extends Command
                             $process = $job->run();
                         } catch (Throwable $e) {
                             $this->output("Exception: " . exception($e));
+                            $failed++;
                         } finally {
                             /**
                              * @T00D00 - log output and error output
@@ -70,6 +73,16 @@ class RunJobs extends Command
         } catch (Throwable $e) {
         } finally {
             $this->removePidFile();
+
+            /**
+             * Notify super admins via dashboard.
+             */
+            if ($failed) {
+                (new Notifier())
+                    ->statuses(1)
+                    ->message($failed . ' job(s) failed')
+                    ->notify();
+            }
 
             if ($e) {
                 throw $e;
