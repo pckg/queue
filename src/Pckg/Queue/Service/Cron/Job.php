@@ -21,6 +21,15 @@ class Job
 
     protected $name = null;
 
+    protected $async = false;
+
+    protected $timeout = 60;
+
+    /**
+     * @var Process
+     */
+    protected $process;
+
     public function __construct($command, $name = null)
     {
         $this->command = $command;
@@ -97,6 +106,13 @@ class Job
         return $this;
     }
 
+    public function async($async = true)
+    {
+        $this->async = $async;
+
+        return $this;
+    }
+
     public function shouldBeRun()
     {
         foreach ($this->when as $when) {
@@ -120,6 +136,23 @@ class Job
         return true;
     }
 
+    public function timeout($timeout)
+    {
+        $this->timeout = $timeout;
+
+        return $this;
+    }
+
+    public function isAsync()
+    {
+        return $this->async;
+    }
+
+    public function isLong()
+    {
+        return $this->isLong();
+    }
+
     public function run()
     {
         $output = null;
@@ -129,11 +162,21 @@ class Job
          * @T00D00 - can we run this in same process, so thing get optimized?
          */
         $command = $this->getFullCommand();
-        $process = new Process($command);
-        $process->setTimeout(60);
-        $process->mustRun();
+        $this->process = new Process($command);
+        $this->process->setTimeout($this->timeout);
 
-        return $process;
+        if ($this->async) {
+            $this->process->start();
+        } else {
+            $this->process->mustRun();
+        }
+
+        return $this;
+    }
+
+    public function getProcess()
+    {
+        return $this->process;
     }
 
     public function getNextExecutionDatetime()

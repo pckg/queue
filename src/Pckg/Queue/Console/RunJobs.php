@@ -51,7 +51,7 @@ class RunJobs extends Command
                         $process = null;
 
                         try {
-                            $process = $job->run();
+                            $job->run();
                         } catch (Throwable $e) {
                             $this->output("Exception: " . exception($e));
                             $failed++;
@@ -69,7 +69,24 @@ class RunJobs extends Command
                         }
                     }
                 }
-            );
+            )->each(function(Job $job) {
+                /**
+                 * Job is asynchronuous.
+                 */
+                if ($job->isAsync()) {
+                    return;
+                }
+
+                $process = $job->getProcess();
+
+                while ($process && $process->isRunning()) {
+                    /**
+                     * Wait for process to finish.
+                     */
+                    $this->output('Sleeping for 1 second, not async and running (' . date('Y-m-d H:i:s') . ')');
+                    sleep(1);
+                }
+            });
         } catch (Throwable $e) {
         } finally {
             $this->removePidFile();
