@@ -190,14 +190,14 @@ class Queue
                    ($appName ? ' ' . $appName : '') .
                    ' ' . $command .
                    ($parameters ? ' ' . implode(' ', $parameters) : '');
-        $queue = new QueueRecord(
+        $queue = QueueRecord::create(
             [
                 'execute_at' => date('Y-m-d H:i:s'),
                 'status'     => config('pckg.queue.enabled') ? $status : 'disabled',
                 'command'    => $command,
+                'type'       => 'command',
             ]
         );
-        $queue->save();
 
         return $queue;
     }
