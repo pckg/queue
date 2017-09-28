@@ -103,6 +103,10 @@ class RunJobs extends Command
                  * Waiting for process to finish.
                  */
                 $this->output("Waiting for async " . $job->getCommand());
+            })->each(function(Job $job) {
+                if (!$job->getProcess()->isSuccessful()) {
+                    $this->output("ERROR: " . $job->getProcess()->getErrorOutput());
+                }
             });
             $this->removePidFile();
 

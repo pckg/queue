@@ -153,22 +153,22 @@ class Job
         return $this->isLong();
     }
 
-    public function run()
+    public function run($mustRun = false)
     {
         $output = null;
         $error = null;
 
-        /**
-         * @T00D00 - can we run this in same process, so thing get optimized?
-         */
         $command = $this->getFullCommand();
         $this->process = new Process($command);
         $this->process->setTimeout($this->timeout);
 
-        if ($this->async) {
-            $this->process->start();
-        } else {
+        /**
+         * Allow parralel execution.
+         */
+        if ($mustRun) {
             $this->process->mustRun();
+        } else {
+            $this->process->start();
         }
 
         return $this;
