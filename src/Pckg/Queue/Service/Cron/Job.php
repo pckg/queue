@@ -23,6 +23,8 @@ class Job
 
     protected $async = false;
 
+    protected $background = false;
+
     protected $timeout = 60;
 
     /**
@@ -54,7 +56,8 @@ class Job
         $command = 'php ' . $path .
                    ($appName ? ' ' . $appName : '') .
                    ' ' . $this->command .
-                   ($parameters ? ' ' . implode(' ', $parameters) : '');
+                   ($parameters ? ' ' . implode(' ', $parameters) : '')
+                   . ($this->background ? ' > /dev/null 2>&1 &' : '');
 
         return $command;
     }
@@ -109,6 +112,13 @@ class Job
     public function async($async = true)
     {
         $this->async = $async;
+
+        return $this;
+    }
+
+    public function background($background = true)
+    {
+        $this->background = $background;
 
         return $this;
     }
