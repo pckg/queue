@@ -245,7 +245,7 @@ class Job
             return false;
         }
 
-        if (!$this->process->isRunning()) {
+        if (!$this->process->isRunning() && $this->process->isStarted()) {
             return false;
         }
 
