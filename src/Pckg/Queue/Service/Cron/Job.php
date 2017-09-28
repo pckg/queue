@@ -239,4 +239,19 @@ class Job
         }
     }
 
+    public function wait()
+    {
+        if (!$this->process) {
+            return false;
+        }
+
+        if (!$this->process->isRunning()) {
+            return false;
+        }
+
+        $this->process->wait();
+
+        return true;
+    }
+
 }

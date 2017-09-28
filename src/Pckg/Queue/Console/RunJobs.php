@@ -34,38 +34,37 @@ class RunJobs extends Command
         $jobs = new Collection(context(JobManager::class)->all());
         $e = null;
         $failed = 0;
+        $ran = new Collection();
 
         try {
-            $jobs->each(
-                function(Job $job) use (&$failed) {
+            $ran = $jobs->filter(
+                function(Job $job) {
                     /**
                      * Touch file so parent process knows that we're not stuck.
                      */
                     $this->touchPidFile();
 
-                    /**
-                     * Check if it's correct time of day to be run.
-                     */
-                    if ($job->shouldBeRun()) {
-                        $e = null;
-                        $process = null;
+                    return $job->shouldBeRun();
+                })->each(
+                function(Job $job) use (&$failed) {
+                    $e = null;
+                    $process = null;
 
-                        try {
-                            $job->run();
-                        } catch (Throwable $e) {
-                            $this->output("Exception: " . exception($e));
-                            $failed++;
-                        } finally {
-                            /**
-                             * @T00D00 - log output and error output
-                             */
-                            if ($process && $output = $process->getOutput()) {
-                                $this->output("Output: " . $output);
-                            }
+                    try {
+                        $job->run();
+                    } catch (Throwable $e) {
+                        $this->output("Exception: " . exception($e));
+                        $failed++;
+                    } finally {
+                        /**
+                         * @T00D00 - log output and error output
+                         */
+                        if ($process && $output = $process->getOutput()) {
+                            $this->output("Output: " . $output);
+                        }
 
-                            if ($process && $errorOutput = $process->getErrorOutput()) {
-                                $this->output("Error:" . $errorOutput);
-                            }
+                        if ($process && $errorOutput = $process->getErrorOutput()) {
+                            $this->output("Error:" . $errorOutput);
                         }
                     }
                 }
@@ -77,18 +76,34 @@ class RunJobs extends Command
                     return;
                 }
 
-                $process = $job->getProcess();
-
-                while ($process && $process->isRunning()) {
-                    /**
-                     * Wait for process to finish.
-                     */
-                    $this->output('Sleeping for 1 second, not async and running (' . date('Y-m-d H:i:s') . ')');
-                    sleep(1);
+                if (!$job->wait()) {
+                    return;
                 }
+
+                /**
+                 * Waiting for process to finish.
+                 */
+                $this->output("Waiting for " . $job->getCommand());
             });
         } catch (Throwable $e) {
         } finally {
+            $ran->each(function(Job $job) {
+                /**
+                 * Job should be finished already.
+                 */
+                if (!$job->isAsync()) {
+                    return;
+                }
+
+                if (!$job->wait()) {
+                    return;
+                }
+
+                /**
+                 * Waiting for process to finish.
+                 */
+                $this->output("Waiting for " . $job->getCommand());
+            });
             $this->removePidFile();
 
             /**
