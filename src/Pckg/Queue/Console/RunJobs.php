@@ -83,7 +83,7 @@ class RunJobs extends Command
                 /**
                  * Waiting for process to finish.
                  */
-                $this->output("Waiting for " . $job->getCommand());
+                $this->output("Waiting for sync " . $job->getCommand());
             });
         } catch (Throwable $e) {
         } finally {
@@ -102,7 +102,7 @@ class RunJobs extends Command
                 /**
                  * Waiting for process to finish.
                  */
-                $this->output("Waiting for " . $job->getCommand());
+                $this->output("Waiting for async " . $job->getCommand());
             });
             $this->removePidFile();
 
