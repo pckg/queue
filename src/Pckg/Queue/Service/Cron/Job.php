@@ -27,6 +27,10 @@ class Job
 
     protected $timeout = 60;
 
+    protected $maxInstances = null;
+
+    protected $repeat = null;
+
     /**
      * @var Process
      */
@@ -67,6 +71,25 @@ class Job
         $this->when = $when;
 
         return $this;
+    }
+
+    public function maxInstances($max)
+    {
+        $this->maxInstances = $max;
+
+        return $this;
+    }
+
+    public function repeat($repeat = true)
+    {
+        $this->repeat = $repeat;
+
+        return $this;
+    }
+
+    public function getRepeat()
+    {
+        return $this->repeat;
     }
 
     public function everyDay()
@@ -125,6 +148,19 @@ class Job
 
     public function shouldBeRun()
     {
+        if ($this->maxInstances) {
+            $output = null;
+            $command = $this->getFullCommand();
+            $command = trim(substr($command, 0, strpos($command, '>')));
+            $output = exec('ps aux | grep php | grep "' . $command . '"', $output);
+            if ($output) {
+                $explode = explode("\n", $output);
+                if (count($explode) >= $this->maxInstances) {
+                    return false;
+                }
+            }
+        }
+
         foreach ($this->when as $when) {
             if (!$when()) {
                 return false;

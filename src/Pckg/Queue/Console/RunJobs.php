@@ -14,6 +14,8 @@ class RunJobs extends Command
 
     protected $pidFile;
 
+    protected $startedAt;
+
     protected function configure()
     {
         $this->setName('cron:run')
@@ -32,20 +34,85 @@ class RunJobs extends Command
         $this->touchPidFile();
 
         $jobs = new Collection(context(JobManager::class)->all());
+
+        $this->startedAt = time();
+
+        $ran = $this->filterJobs($jobs);
+        $stats = $this->runJobs($ran);
+        $this->checkRepeating($ran);
+        $this->removePidFile();
+
+        /**
+         * Notify super admins via dashboard.
+         */
+        if ($stats['failed']) {
+            (new Notifier())
+                ->statuses(1)
+                ->message($stats['failed'] . ' job(s) failed')
+                ->notify();
+        }
+
+        if ($stats['e']) {
+            throw $stats['e'];
+        }
+    }
+
+    protected function checkRepeating(Collection $jobs)
+    {
+        /**
+         * Check for repeating jobs.
+         */
+        $repeats = new Collection();
+        $jobs->each(function(Job $job) use ($repeats) {
+            if (!($repeat = $job->getRepeat())) {
+                return;
+            }
+
+            $repeats->push($job);
+        });
+
+        while ($repeats->count() && time() < $this->startedAt + 50) {
+            $jobs->each(function(Job $job) {
+                if ($job->getProcess()->isRunning()) {
+                    // wait for process to finish
+                } else {
+                    $collection = new Collection([$job]);
+                    $filtered = $this->filterJobs($collection);
+                    $this->runJobs($filtered);
+                }
+            });
+            sleep(5);
+        }
+    }
+
+    protected function filterJobs(Collection $jobs)
+    {
+        return $jobs->filter(
+            function(Job $job) {
+                /**
+                 * Touch file so parent process knows that we're not stuck.
+                 */
+                $this->touchPidFile();
+
+                return $job->shouldBeRun();
+            });
+    }
+
+    protected function runJobs(Collection $jobs)
+    {
         $e = null;
         $failed = 0;
-        $ran = new Collection();
 
+        if (!$jobs->count()) {
+            return;
+        }
+        
+        $this->touchPidFile();
         try {
-            $ran = $jobs->filter(
-                function(Job $job) {
-                    /**
-                     * Touch file so parent process knows that we're not stuck.
-                     */
-                    $this->touchPidFile();
-
-                    return $job->shouldBeRun();
-                })->each(
+            /**
+             * Try to execute job.
+             */
+            $jobs->each(
                 function(Job $job) use (&$failed) {
                     $e = null;
                     $process = null;
@@ -68,7 +135,11 @@ class RunJobs extends Command
                         }
                     }
                 }
-            )->each(function(Job $job) {
+            );
+            /**
+             * Check sync job statuses.
+             */
+            $jobs->each(function(Job $job) {
                 /**
                  * Job is asynchronuous.
                  */
@@ -86,8 +157,12 @@ class RunJobs extends Command
                 $this->output("Waiting for sync " . $job->getCommand());
             });
         } catch (Throwable $e) {
+            $this->output('EXCEPTION: ' . exception($e));
         } finally {
-            $ran->each(function(Job $job) {
+            /**
+             * Check async job statuses.
+             */
+            $jobs->each(function(Job $job) {
                 /**
                  * Job should be finished already.
                  */
@@ -108,21 +183,11 @@ class RunJobs extends Command
                     $this->output("ERROR: " . $job->getProcess()->getErrorOutput());
                 }
             });
-            $this->removePidFile();
 
-            /**
-             * Notify super admins via dashboard.
-             */
-            if ($failed) {
-                (new Notifier())
-                    ->statuses(1)
-                    ->message($failed . ' job(s) failed')
-                    ->notify();
-            }
-
-            if ($e) {
-                throw $e;
-            }
+            return [
+                'failed' => $failed,
+                'e'      => $e,
+            ];
         }
     }
 
