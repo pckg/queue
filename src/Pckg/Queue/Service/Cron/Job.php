@@ -106,6 +106,13 @@ class Job
         return $this;
     }
 
+    public function onMinutes(array $minutes = [])
+    {
+        $this->minutes = $minutes;
+
+        return $this;
+    }
+
     public function onDays($days = [])
     {
         $this->days = $days;
