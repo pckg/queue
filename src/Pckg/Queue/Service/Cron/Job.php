@@ -178,7 +178,7 @@ class Job
             return false;
         }
 
-        if ($this->minutes && !in_array(date('i'), $this->minutes)) {
+        if ($this->minutes && !in_array((int)date('i'), $this->minutes)) {
             return false;
         }
 
