@@ -3,15 +3,15 @@
         <h3>${ table } (${ queues.length })</h3>
         <table class="table table-condensed table-stripped" v-if="queues.length">
             <tr>
-                <th>ID</th>
-                <th>Created at</th>
-                <th>Execute at</th>
-                <th>Started at</th>
-                <th>Finished at</th>
-                <th>Log</th>
-                <th>Command</th>
-                <th>Status</th>
-                <th v-if=manual></th>
+                <th class="nobr">ID</th>
+                <th class="nobr">Created at</th>
+                <th class="nobr">Execute at</th>
+                <th class="nobr">Started at</th>
+                <th class="nobr">Finished at</th>
+                <th class="nobr">Log</th>
+                <th class="nobr">Command</th>
+                <th class="nobr">Status</th>
+                <th v-if=manual class="nobr"></th>
             </tr>
             <tr v-for="queue in queues" :class="getClass(queue)">
                 <td>${ queue.id }</td>
