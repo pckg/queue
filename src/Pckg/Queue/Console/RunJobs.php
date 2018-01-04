@@ -22,6 +22,9 @@ class RunJobs extends Command
              ->setDescription('Run cronjobs / jobs')
              ->addOptions([
                               'pid-file' => 'Process ID file for updates',
+                          ], InputOption::VALUE_OPTIONAL)
+             ->addOptions([
+                              'debug' => 'Print messages',
                           ], InputOption::VALUE_OPTIONAL);
     }
 
@@ -38,7 +41,13 @@ class RunJobs extends Command
         $this->startedAt = time();
 
         $ran = $this->filterJobs($jobs);
+        if ($this->option('debug')) {
+            $this->output(date('His') . ' - Initial run');
+        }
         $stats = $this->runJobs($ran);
+        if ($this->option('debug')) {
+            $this->output(date('His') . ' - Check repeating');
+        }
         $this->checkRepeating($ran);
         $this->removePidFile();
 
@@ -71,17 +80,26 @@ class RunJobs extends Command
             $repeats->push($job);
         });
 
+        if ($this->option('debug')) {
+            $this->output('Repeats ' . $repeats->count());
+        }
         while ($repeats->count() && time() < $this->startedAt + 50) {
             $jobs->each(function(Job $job) {
                 if ($job->getProcess()->isRunning()) {
+                    if ($this->option('debug')) {
+                        $this->output('Wait for finish');
+                    }
                     // wait for process to finish
                 } else {
                     $collection = new Collection([$job]);
                     $filtered = $this->filterJobs($collection);
+                    if ($this->option('debug')) {
+                        $this->output('Running filtered');
+                    }
                     $this->runJobs($filtered);
                 }
             });
-            sleep(5);
+            usleep(5000);
         }
     }
 
@@ -106,7 +124,11 @@ class RunJobs extends Command
         if (!$jobs->count()) {
             return;
         }
-        
+
+        if ($this->option('debug')) {
+            $this->output(date('His') . ' - running ' . $jobs->count());
+        }
+
         $this->touchPidFile();
         try {
             /**
@@ -154,10 +176,12 @@ class RunJobs extends Command
                 /**
                  * Waiting for process to finish.
                  */
-                $this->output("Waiting for sync " . $job->getCommand());
+                if ($this->option('debug')) {
+                    $this->output(date('His') . " - Waiting for sync " . $job->getCommand());
+                }
             });
         } catch (Throwable $e) {
-            $this->output('EXCEPTION: ' . exception($e));
+            $this->output(date('His') . ' - EXCEPTION: ' . exception($e));
         } finally {
             /**
              * Check async job statuses.
@@ -177,7 +201,9 @@ class RunJobs extends Command
                 /**
                  * Waiting for process to finish.
                  */
-                $this->output("Waiting for async " . $job->getCommand());
+                if ($this->option('debug')) {
+                    $this->output(date('His') . " - Waiting for async " . $job->getCommand());
+                }
             })->each(function(Job $job) {
                 if (!$job->getProcess()->isSuccessful()) {
                     $this->output("ERROR: " . $job->getProcess()->getErrorOutput());

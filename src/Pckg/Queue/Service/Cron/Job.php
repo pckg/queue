@@ -1,5 +1,6 @@
 <?php namespace Pckg\Queue\Service\Cron;
 
+use Exception;
 use Symfony\Component\Process\Process;
 
 class Job
@@ -29,7 +30,7 @@ class Job
 
     protected $maxInstances = null;
 
-    protected $repeat = null;
+    protected $repeat = false;
 
     /**
      * @var Process
@@ -159,10 +160,14 @@ class Job
             $output = null;
             $command = $this->getFullCommand();
             $command = trim(substr($command, 0, strpos($command, '>')));
-            $output = exec('ps aux | grep php | grep "' . $command . '"', $output);
+            $command = '[' . substr($command, 0, 1) . ']' . substr($command, 1);
+            $grep = 'ps aux | grep "' . $command . '"';
+            $output = exec($grep, $output);
             if ($output) {
                 $explode = explode("\n", $output);
-                if (count($explode) >= $this->maxInstances) {
+                if (count($explode) > $this->maxInstances) {
+                    throw new Exception("Too many instances");
+                } else if (count($explode) == $this->maxInstances) {
                     return false;
                 }
             }
