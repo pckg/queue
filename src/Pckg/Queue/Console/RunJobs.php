@@ -71,6 +71,7 @@ class RunJobs extends Command
         /**
          * Check for repeating jobs.
          */
+        sleep(1);
         $repeats = new Collection();
         $jobs->each(function(Job $job) use ($repeats) {
             if (!($repeat = $job->getRepeat())) {
@@ -83,7 +84,8 @@ class RunJobs extends Command
         if ($this->option('debug')) {
             $this->output('Repeats ' . $repeats->count());
         }
-        while ($repeats->count() && time() < $this->startedAt + 50) {
+        while ($repeats->count() && time() < $this->startedAt + 45) {
+            sleep(2);
             $jobs->each(function(Job $job) {
                 if ($job->getProcess()->isRunning()) {
                     if ($this->option('debug')) {
@@ -99,7 +101,6 @@ class RunJobs extends Command
                     $this->runJobs($filtered);
                 }
             });
-            usleep(5000);
         }
     }
 
