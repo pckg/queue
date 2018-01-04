@@ -157,17 +157,16 @@ class Job
     public function shouldBeRun()
     {
         if ($this->maxInstances) {
-            $output = null;
+            $output = [];
             $command = $this->getFullCommand();
             $command = trim(substr($command, 0, strpos($command, '>')));
             $command = '[' . substr($command, 0, 1) . ']' . substr($command, 1);
-            $grep = 'ps aux | grep "' . $command . '"';
-            $output = exec($grep, $output);
+            $grep = 'ps aux | grep \'' . $command . '\'';
+            exec($grep, $output);
             if ($output) {
-                $explode = explode("\n", $output);
-                if (count($explode) > $this->maxInstances) {
+                if (count($output) > $this->maxInstances) {
                     throw new Exception("Too many instances");
-                } else if (count($explode) == $this->maxInstances) {
+                } else if (count($output) == $this->maxInstances) {
                     return false;
                 }
             }
