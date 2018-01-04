@@ -1,6 +1,5 @@
 <?php namespace Pckg\Queue\Service\Cron;
 
-use Exception;
 use Symfony\Component\Process\Process;
 
 class Job
@@ -10,7 +9,7 @@ class Job
 
     protected $data = [];
 
-    protected $when = [];
+    protected $when = null;
 
     protected $days = [];
 
@@ -173,7 +172,8 @@ class Job
             }
         }
 
-        foreach ($this->when as $when) {
+        if ($this->when) {
+            $when = $this->when;
             if (!$when()) {
                 return false;
             }
