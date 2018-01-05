@@ -160,13 +160,18 @@ class Job
             $returnVar = null;
             $command = $this->getFullCommand();
             $command = trim(substr($command, 0, strpos($command, '>')));
-            $command = '[' . substr($command, 0, 1) . ']' . substr($command, 1);
-            $grep = 'ps aux | grep \'' . $command . '\'';
+            $grep = 'ps aux';
             $lastLine = exec($grep, $output, $returnVar);
             if ($output) {
-                if (count($output) > $this->maxInstances) {
+                $count = 0;
+                foreach ($output as $o) {
+                    if (strpos($o, $command) !== false) {
+                        $count++;
+                    }
+                }
+                if ($count > $this->maxInstances) {
                     return false;
-                } else if (count($output) == $this->maxInstances) {
+                } else if ($count == $this->maxInstances) {
                     return false;
                 }
             }
