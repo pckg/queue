@@ -153,23 +153,29 @@ class Job
         return $this;
     }
 
+    public function getNumberOfRunningInstances()
+    {
+        $output = [];
+        $returnVar = null;
+        $command = $this->getFullCommand();
+        $command = trim(substr($command, 0, strpos($command, '>')));
+        $grep = 'ps -wwaux';
+        $lastLine = exec($grep, $output, $returnVar);
+
+        $count = 0;
+        foreach ($output as $o) {
+            if (strpos($o, $command) !== false) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
     public function shouldBeRun()
     {
         if ($this->maxInstances) {
-            $output = [];
-            $returnVar = null;
-            $command = $this->getFullCommand();
-            $command = trim(substr($command, 0, strpos($command, '>')));
-            $grep = 'ps aux';
-            $lastLine = exec($grep, $output, $returnVar);
-
-            $count = 0;
-            foreach ($output as $o) {
-                if (strpos($o, $command) !== false) {
-                    $count++;
-                }
-            }
-            echo $count . ' instances running' . "\n";
+            $count = $this->getNumberOfRunningInstances();
 
             if ($count > $this->maxInstances) {
                 return false;

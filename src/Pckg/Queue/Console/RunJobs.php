@@ -122,6 +122,9 @@ class RunJobs extends Command
                     }
                 }
             });
+            if ($this->option('debug')) {
+                $this->output('Sleep');
+            }
             sleep(2);
         }
     }
@@ -171,13 +174,13 @@ class RunJobs extends Command
                         /**
                          * @T00D00 - log output and error output
                          */
-                        if ($process && $output = $process->getOutput()) {
+                        /*if ($process && $output = $process->getOutput()) {
                             $this->output("Output: " . $output);
                         }
 
                         if ($process && $errorOutput = $process->getErrorOutput()) {
                             $this->output("Error:" . $errorOutput);
-                        }
+                        }*/
                     }
                 }
             );
