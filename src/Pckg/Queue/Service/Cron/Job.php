@@ -27,7 +27,7 @@ class Job
 
     protected $timeout = 60;
 
-    protected $maxInstances = null;
+    protected $maxInstances = 1;
 
     protected $repeat = false;
 
