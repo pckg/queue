@@ -45,7 +45,7 @@ class RunJobs extends Command
          */
         $ran = $this->filterJobs($jobs);
         if ($this->option('debug')) {
-            $this->output(date('His') . ' - Initial run');
+            $this->output(date('His') . ' - Initial run ' . $ran->count() . '/' . $jobs->count());
         }
 
         /**

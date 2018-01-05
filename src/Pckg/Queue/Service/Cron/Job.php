@@ -162,6 +162,7 @@ class Job
             $command = trim(substr($command, 0, strpos($command, '>')));
             $grep = 'ps aux';
             $lastLine = exec($grep, $output, $returnVar);
+            echo count($output) . ' instances running' . "\n";
             if ($output) {
                 $count = 0;
                 foreach ($output as $o) {
