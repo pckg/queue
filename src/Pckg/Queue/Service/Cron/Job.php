@@ -162,19 +162,19 @@ class Job
             $command = trim(substr($command, 0, strpos($command, '>')));
             $grep = 'ps aux';
             $lastLine = exec($grep, $output, $returnVar);
-            echo count($output) . ' instances running' . "\n";
-            if ($output) {
-                $count = 0;
-                foreach ($output as $o) {
-                    if (strpos($o, $command) !== false) {
-                        $count++;
-                    }
+
+            $count = 0;
+            foreach ($output as $o) {
+                if (strpos($o, $command) !== false) {
+                    $count++;
                 }
-                if ($count > $this->maxInstances) {
-                    return false;
-                } else if ($count == $this->maxInstances) {
-                    return false;
-                }
+            }
+            echo $count . ' instances running' . "\n";
+
+            if ($count > $this->maxInstances) {
+                return false;
+            } else if ($count == $this->maxInstances) {
+                return false;
             }
         }
 
