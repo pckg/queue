@@ -158,7 +158,6 @@ class Job
         $output = [];
         $returnVar = null;
         $command = $this->getFullCommand();
-        $command = trim(substr($command, 0, strpos($command, '>')));
         $grep = 'ps -wwaux';
         $lastLine = exec($grep, $output, $returnVar);
 
