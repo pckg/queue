@@ -40,15 +40,27 @@ class RunJobs extends Command
 
         $this->startedAt = time();
 
+        /**
+         * Find jobs that need to be executed.
+         */
         $ran = $this->filterJobs($jobs);
         if ($this->option('debug')) {
             $this->output(date('His') . ' - Initial run');
         }
+
+        /**
+         * Run those jobs.
+         */
         $stats = $this->runJobs($ran);
         if ($this->option('debug')) {
             $this->output(date('His') . ' - Check repeating');
         }
+
+        /**
+         * Check for repeating jobs.
+         */
         $this->checkRepeating($ran);
+
         $this->removePidFile();
 
         /**
@@ -87,24 +99,30 @@ class RunJobs extends Command
         if ($this->option('debug')) {
             $this->output('Repeats ' . $repeats->count());
         }
-        
-        while ($repeats->count() && time() < $this->startedAt + 45) {
-            sleep(2);
-            $jobs->each(function(Job $job) {
+
+        while (time() < $this->startedAt + 45) {
+            $repeats->each(function(Job $job) {
                 if ($job->getProcess()->isRunning()) {
                     if ($this->option('debug')) {
                         $this->output('Wait for finish');
                     }
                     // wait for process to finish
                 } else {
-                    $collection = new Collection([$job]);
-                    $filtered = $this->filterJobs($collection);
-                    if ($this->option('debug')) {
-                        $this->output('Running filtered');
+                    if ($job->getProcess()->isSuccessful()) {
+                        $collection = new Collection([$job]);
+                        $filtered = $this->filterJobs($collection);
+                        if ($this->option('debug')) {
+                            $this->output('Running filtered ' . $filtered->count());
+                        }
+                        $this->runJobs($filtered);
+                    } else {
+                        if ($this->option('debug')) {
+                            $this->output('Job not successful');
+                        }
                     }
-                    $this->runJobs($filtered);
                 }
             });
+            sleep(2);
         }
     }
 
