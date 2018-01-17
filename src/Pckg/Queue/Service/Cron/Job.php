@@ -163,7 +163,7 @@ class Job
 
         $count = 0;
         foreach ($output as $o) {
-            if (strpos($o, $command) !== false) {
+            if (strpos($o, $this->command) !== false && strpos($o, path('root')) !== false) {
                 $count++;
             }
         }
