@@ -176,9 +176,7 @@ class Job
         if ($this->maxInstances) {
             $count = $this->getNumberOfRunningInstances();
 
-            if ($count > $this->maxInstances) {
-                return false;
-            } else if ($count == $this->maxInstances) {
+            if ($count >= $this->maxInstances) {
                 return false;
             }
         }
