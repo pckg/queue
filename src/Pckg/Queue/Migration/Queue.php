@@ -19,7 +19,7 @@ class Queue extends Migration
         $queue->datetime('execute_at');
         $queue->datetime('started_at');
         $queue->datetime('finished_at');
-        $queue->text('status');
+        $queue->varchar('status', 32);
         $queue->text('log');
         $queue->text('command');
         $queue->integer('executions');
