@@ -30,7 +30,7 @@ class Queue extends Migration
         $queueLog = $this->table('queue_logs');
         $queueLog->integer('queue_id')->references('queue');
         $queueLog->datetime('datetime');
-        $queueLog->text('status');
+        $queueLog->varchar('status', 32);
         $queueLog->text('log');
         $queueLog->decimal('progress');
     }
