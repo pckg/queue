@@ -9,6 +9,9 @@ class Job
 
     protected $data = [];
 
+    /**
+     * @var null|callable
+     */
     protected $when = null;
 
     protected $days = [];
