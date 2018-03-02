@@ -58,13 +58,6 @@ class Queue extends Provider
         ];
     }
 
-    public function afterwares()
-    {
-        return [
-            EncapsulateResponse::class,
-        ];
-    }
-
     public function consoles()
     {
         return [
