@@ -1,10 +1,16 @@
 <?php namespace Pckg\Queue\Service\Cron;
 
+use Pckg\Database\Repository;
+use Pckg\Framework\Console\Command;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class Job
 {
 
+    /**
+     * @var string|Command
+     */
     protected $command;
 
     protected $data = [];
@@ -39,14 +45,33 @@ class Job
      */
     protected $process;
 
+    protected $pid = null;
+
     public function __construct($command, $name = null)
     {
         $this->command = $command;
         $this->name = $name ?? $command;
     }
 
+    public function setPid($pid)
+    {
+        $this->pid = $pid;
+
+        return $this;
+    }
+
+    public function getCommandName()
+    {
+        return $this->getCommand()->getName();
+    }
+
     public function getCommand()
     {
+        if (is_string($this->command)) {
+            $class = $this->command;
+            $this->command = new $class;
+        }
+
         return $this->command;
     }
 
@@ -62,7 +87,7 @@ class Job
         $parameters = [];
         $command = 'php ' . $path .
                    ($appName ? ' ' . $appName : '') .
-                   ' ' . $this->command .
+                   ' ' . $this->getCommand()->getName() .
                    ($parameters ? ' ' . implode(' ', $parameters) : '')
                    . ($this->background ? ' > /dev/null 2>&1 &' : '');
 
@@ -166,7 +191,7 @@ class Job
 
         $count = 0;
         foreach ($output as $o) {
-            if (strpos($o, $this->command) !== false && strpos($o, path('root')) !== false) {
+            if (strpos($o, $this->getCommand()->getName()) !== false && strpos($o, path('root')) !== false) {
                 $count++;
             }
         }
@@ -218,11 +243,60 @@ class Job
         return $this->async;
     }
 
+    public function isBackground()
+    {
+        return $this->background;
+    }
+
     public function isLong()
     {
         return $this->isLong();
     }
 
+    public function fork()
+    {
+        $pid = pcntl_fork();
+        if ($pid == -1 || $pid) {
+            return $pid;
+        }
+
+        /**
+         * First, change process name.
+         */
+        // child
+        try {
+            $title = $this->getFullCommand();
+            if (!cli_set_process_title($title)) {
+                /**
+                 * This is crucial for counting number of running instances.
+                 */
+                exit(2);
+            }
+
+            /**
+             * __wakeup :)
+             */
+            trigger('forked');
+
+            $this->command->executeManually();
+
+            exit(0);
+        } catch (Throwable $e) {
+            /**
+             * @T00D00 - log error?
+             */
+            echo exception($e);
+            exit(1);
+        }
+    }
+
+    /**
+     * @param bool $mustRun
+     *
+     * @return $this
+     *
+     * Run job in different process.
+     */
     public function run($mustRun = false)
     {
         $output = null;
@@ -233,7 +307,7 @@ class Job
         $this->process->setTimeout($this->timeout);
 
         /**
-         * Allow parralel execution.
+         * Allow parralel execution. Fork process?
          */
         if ($mustRun) {
             $this->process->mustRun();

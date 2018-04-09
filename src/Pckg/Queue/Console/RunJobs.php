@@ -28,6 +28,148 @@ class RunJobs extends Command
                           ], InputOption::VALUE_OPTIONAL);
     }
 
+    public function handleNormal(Collection $jobs)
+    {
+
+        /**
+         * Run those jobs.
+         */
+        $stats = $this->runJobs($jobs);
+        if ($this->option('debug')) {
+            $this->output(date('His') . ' - Check repeating');
+        }
+
+        /**
+         * Check for repeating jobs.
+         */
+        $this->checkRepeating($jobs);
+
+        return $stats;
+    }
+
+    public function tryFork(Job $job, &$pids)
+    {
+        $class = get_class($job->getCommand());
+        try {
+            $pid = $job->fork();
+
+            if ($pid == -1) {
+                $this->output('Cannot fork job: ' . $class);
+
+                return;
+            }
+
+            if (!$pid) {
+                $this->output('Child?' . $class);
+
+                return;
+            }
+            $job->setPid($pid);
+            if (!$job->getRepeat() && $job->isBackground()) {
+                $this->output('Running and leaving in background: ' . $class);
+
+                return;
+            }
+
+            if ($job->getRepeat()) {
+                $this->output('Repeating job: ' . $class);
+            } else {
+                $this->output('Front job: ' . $class);
+            }
+
+            /**
+             * Wait only for repeating processes.
+             */
+            $pids[$pid] = $job;
+        } catch (Throwable $e) {
+            $this->output("Exception: " . exception($e) . ': ' . $class);
+        }
+    }
+
+    public function handleForked(Collection $jobs)
+    {
+        $e = null;
+        $failed = 0;
+
+        if ($this->option('debug')) {
+            $this->outputDated('running ' . $jobs->count() . ' jobs');
+        }
+
+        $this->touchPidFile();
+        try {
+            /**
+             * Try to execute job.
+             */
+            $pids = [];
+            $jobs->each(
+                function(Job $job) use (&$pids) {
+                    $this->tryFork($job, $pids);
+                }
+            );
+
+            while (count($pids) > 0) {
+                /**
+                 * Sleep before check is made.
+                 */
+                sleep(1);
+
+                foreach ($pids as $pid => $job) {
+                    $this->tryStatus($job, $pid, $pids);
+                }
+
+                if ($pids) {
+                    continue;
+                }
+
+                break;
+            }
+        } catch (Throwable $e) {
+            $this->output(date('His') . ' - EXCEPTION: ' . exception($e));
+        } finally {
+
+            return [
+                'failed' => $failed,
+                'e'      => $e,
+            ];
+        }
+    }
+
+    public function tryStatus(Job $job, $pid, &$pids)
+    {
+        $res = pcntl_waitpid($pid, $status, WNOHANG);
+
+        $class = get_class($job->getCommand());
+
+        if (!($res > 0)) {
+            $this->outputDated('still running ' . $class);
+
+            return;
+        }
+
+        unset($pids[$pid]);
+
+        if ($res == -1) {
+            $this->outputDated('cannot fork ' . $class . ' ' . $pid . " " . $status . " " . $res);
+
+            return;
+        }
+
+        if ($status != 0) {
+            $this->outputDated('error ' . $class . ' ' . $pid . " " . $status . " " . $res);
+
+            return;
+        }
+
+        if (!$job->getRepeat() || !$job->shouldBeRun()) {
+            $this->output('finished ' . $class . ' ' . $pid . " " . $status . " " . $res);
+
+            return;
+        }
+
+        $this->outputDated('repeating ' . $class . ' ' . $pid . " " . $status . " " . $res);
+        $this->tryFork($job, $pids);
+    }
+
     /**
      * @param Queue $queue
      */
@@ -48,18 +190,17 @@ class RunJobs extends Command
             $this->output(date('His') . ' - Initial run ' . $ran->count() . '/' . $jobs->count());
         }
 
-        /**
-         * Run those jobs.
-         */
-        $stats = $this->runJobs($ran);
-        if ($this->option('debug')) {
-            $this->output(date('His') . ' - Check repeating');
+        if (!$ran->count()) {
+            return;
         }
 
-        /**
-         * Check for repeating jobs.
-         */
-        $this->checkRepeating($ran);
+        $stats = [];
+        $this->touchPidFile();
+        if (true) {
+            $stats = $this->handleForked($ran);
+        } else {
+            $stats = $this->handleNormal($ran);
+        }
 
         $this->removePidFile();
 
@@ -147,10 +288,6 @@ class RunJobs extends Command
         $e = null;
         $failed = 0;
 
-        if (!$jobs->count()) {
-            return;
-        }
-
         if ($this->option('debug')) {
             $this->output(date('His') . ' - running ' . $jobs->count());
         }
@@ -203,7 +340,7 @@ class RunJobs extends Command
                  * Waiting for process to finish.
                  */
                 if ($this->option('debug')) {
-                    $this->output(date('His') . " - Waiting for sync " . $job->getCommand());
+                    $this->output(date('His') . " - Waiting for sync " . $job->getCommandName());
                 }
             });
         } catch (Throwable $e) {
@@ -228,7 +365,7 @@ class RunJobs extends Command
                  * Waiting for process to finish.
                  */
                 if ($this->option('debug')) {
-                    $this->output(date('His') . " - Waiting for async " . $job->getCommand());
+                    $this->output(date('His') . " - Waiting for async " . $job->getCommandName());
                 }
             })->each(function(Job $job) {
                 if (!$job->getProcess()->isSuccessful()) {
