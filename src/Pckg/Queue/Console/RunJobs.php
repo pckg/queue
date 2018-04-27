@@ -166,6 +166,10 @@ class RunJobs extends Command
             return;
         }
 
+        if (time() >= $this->startedAt + 50) {
+            return;
+        }
+
         $this->outputDated('repeating ' . $class . ' ' . $pid . " " . $status . " " . $res);
         $this->tryFork($job, $pids);
     }
