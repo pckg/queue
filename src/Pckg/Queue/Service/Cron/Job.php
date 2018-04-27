@@ -87,10 +87,11 @@ class Job
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $path = path('root') . 'console';
+        $parameters = [];
         $command = 'php ' . $path .
                    ($appName ? ' ' . $appName : '') .
                    ' ' . $this->getCommand()->getName() .
-                   ($this->parameters ? ' ' . implode(' ', $this->parameters) : '')
+                   ($parameters ? ' ' . implode(' ', $parameters) : '')
                    . ($this->background ? ' > /dev/null 2>&1 &' : '');
 
         return $command;
@@ -280,7 +281,7 @@ class Job
              */
             trigger('forked');
 
-            $this->command->executeManually();
+            $this->command->executeManually($this->parameters);
 
             exit(0);
         } catch (Throwable $e) {
