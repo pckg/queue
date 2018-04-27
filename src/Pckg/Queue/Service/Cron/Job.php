@@ -47,10 +47,13 @@ class Job
 
     protected $pid = null;
 
-    public function __construct($command, $name = null)
+    protected $parameters = [];
+
+    public function __construct($command, $name = null, $parameters = [])
     {
         $this->command = $command;
         $this->name = $name ?? $command;
+        $this->parameters = $parameters;
     }
 
     public function setPid($pid)
@@ -84,11 +87,10 @@ class Job
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $path = path('root') . 'console';
-        $parameters = [];
         $command = 'php ' . $path .
                    ($appName ? ' ' . $appName : '') .
                    ' ' . $this->getCommand()->getName() .
-                   ($parameters ? ' ' . implode(' ', $parameters) : '')
+                   ($this->parameters ? ' ' . implode(' ', $this->parameters) : '')
                    . ($this->background ? ' > /dev/null 2>&1 &' : '');
 
         return $command;
