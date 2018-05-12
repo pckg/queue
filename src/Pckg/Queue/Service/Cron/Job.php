@@ -1,6 +1,5 @@
 <?php namespace Pckg\Queue\Service\Cron;
 
-use Pckg\Database\Repository;
 use Pckg\Framework\Console\Command;
 use Symfony\Component\Process\Process;
 use Throwable;
@@ -23,6 +22,8 @@ class Job
     protected $days = [];
 
     protected $minutes = [];
+
+    protected $hours = [];
 
     protected $times = [];
 
@@ -89,10 +90,10 @@ class Job
         $path = path('root') . 'console';
         $parameters = [];
         $command = 'php ' . $path .
-                   ($appName ? ' ' . $appName : '') .
-                   ' ' . $this->getCommand()->getName() .
-                   ($parameters ? ' ' . implode(' ', $parameters) : '')
-                   . ($this->background ? ' > /dev/null 2>&1 &' : '');
+            ($appName ? ' ' . $appName : '') .
+            ' ' . $this->getCommand()->getName() .
+            ($parameters ? ' ' . implode(' ', $parameters) : '')
+            . ($this->background ? ' > /dev/null 2>&1 &' : '');
 
         return $command;
     }
@@ -140,6 +141,13 @@ class Job
     public function onMinutes(array $minutes = [])
     {
         $this->minutes = $minutes;
+
+        return $this;
+    }
+
+    public function onHours(array $hours = [])
+    {
+        $this->hours = $hours;
 
         return $this;
     }
@@ -223,6 +231,10 @@ class Job
             return false;
         }
 
+        if ($this->hours && !in_array((int)date('H'), $this->hours)) {
+            return false;
+        }
+
         if ($this->minutes && !in_array((int)date('i'), $this->minutes)) {
             return false;
         }
@@ -297,7 +309,6 @@ class Job
      * @param bool $mustRun
      *
      * @return $this
-     *
      * Run job in different process.
      */
     public function run($mustRun = false)
@@ -331,28 +342,32 @@ class Job
         if (!$this->days && !$this->minutes && !$this->times) {
             // everyMinute()
             return 'in less than a minute';
-        } elseif (!$this->days && !$this->minutes) {
+        }
+
+        if (!$this->days && !$this->minutes) {
             // everyDay()->at()
             $time = end($this->times);
             if (date('H:i') > $time) {
                 return 'tommorow at ' . $time;
-            } else {
-                return 'today at ' . $time;
             }
-        } else if ($this->days) {
+
+            return 'today at ' . $time;
+        }
+
+        if ($this->days) {
             // onDays()->at()
             $day = end($this->days);
             $time = end($this->times);
 
-            if (date('N') == $day) {
-                if (date('H:i') > $time) {
-                    return 'next ' . date('l') . ' at ' . $time;
-                } else {
-                    return 'today at ' . $time;
-                }
-            } else {
+            if (date('N') != $day) {
                 return 'next ' . date('l', strtotime((7 + $day - date('N')) . 'days')) . ' at ' . $time;
             }
+
+            if (date('H:i') > $time) {
+                return 'next ' . date('l') . ' at ' . $time;
+            }
+
+            return 'today at ' . $time;
         }
     }
 
@@ -361,28 +376,30 @@ class Job
         if (!$this->days && !$this->minutes && !$this->times) {
             // everyMinute()
             return 'in last minute';
-        } elseif (!$this->days && !$this->minutes) {
+        }
+
+        if (!$this->days && !$this->minutes) {
             // everyDay()->at()
             $time = end($this->times);
             if (date('H:i') > $time) {
                 return 'today at ' . $time;
-            } else {
-                return 'yesterday at ' . $time;
             }
-        } else if ($this->days) {
+            return 'yesterday at ' . $time;
+
+        }
+        if ($this->days) {
             // onDays()->at()
             $day = end($this->days);
             $time = end($this->times);
 
-            if (date('N') == $day) {
-                if (date('H:i') > $time) {
-                    return 'today at ' . $time;
-                } else {
-                    return 'previous ' . date('l') . ' at ' . $time;
-                }
-            } else {
+            if (date('N') != $day) {
                 return 'previous ' . date('l', strtotime((7 + $day - date('N')) . 'days')) . ' at ' . $time;
             }
+            if (date('H:i') > $time) {
+                return 'today at ' . $time;
+            }
+            return 'previous ' . date('l') . ' at ' . $time;
+
         }
     }
 
