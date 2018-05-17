@@ -20,8 +20,8 @@ class Queue extends Migration
         $queue->datetime('started_at');
         $queue->datetime('finished_at');
         $queue->varchar('status', 32);
-        $queue->text('log');
-        $queue->text('command');
+        $queue->longtext('log');
+        $queue->longtext('command');
         $queue->integer('executions');
         $queue->integer('retries');
         $queue->decimal('progress');
