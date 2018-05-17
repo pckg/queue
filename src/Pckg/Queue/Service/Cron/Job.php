@@ -2,7 +2,6 @@
 
 use Pckg\Framework\Console\Command;
 use Symfony\Component\Process\Process;
-use Throwable;
 
 class Job
 {
@@ -270,39 +269,20 @@ class Job
 
     public function fork()
     {
-        $pid = pcntl_fork();
-        if ($pid == -1 || $pid) {
-            return $pid;
-        }
-
-        /**
-         * First, change process name.
-         */
-        // child
-        try {
-            $title = $this->getFullCommand();
-            if (!cli_set_process_title($title)) {
+        Fork::fork(
+            function() {
                 /**
-                 * This is crucial for counting number of running instances.
+                 * Execute this forked.
                  */
-                exit(2);
+                $this->command->executeManually($this->parameters);
+            },
+            function() {
+                /**
+                 * Command name for possible tracking.
+                 */
+                return $this->getFullCommand();
             }
-
-            /**
-             * __wakeup :)
-             */
-            trigger('forked');
-
-            $this->command->executeManually($this->parameters);
-
-            exit(0);
-        } catch (Throwable $e) {
-            /**
-             * @T00D00 - log error?
-             */
-            echo exception($e);
-            exit(1);
-        }
+        );
     }
 
     /**
