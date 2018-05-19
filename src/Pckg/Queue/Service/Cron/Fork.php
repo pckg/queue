@@ -19,14 +19,9 @@ class Fork
     /**
      *
      */
-    public static function waitWaiting()
+    public static function waitWaiting($seconds = 5)
     {
         while (count(static::$pids) > 0) {
-            /**
-             * Wait for 5 seconds before next check.
-             */
-            sleep(5);
-
             foreach (static::$pids as $pid) {
                 /**
                  * Get process status code.
@@ -50,6 +45,10 @@ class Fork
              * We have processes to check, retry.
              */
             if (static::$pids) {
+                /**
+                 * Wait for 5 seconds before next check.
+                 */
+                sleep($seconds);
                 continue;
             }
 
