@@ -163,9 +163,15 @@ class Job
         return $this->onDays([1, 2, 3, 4, 5]);
     }
 
-    public function at($time)
+    public function at($times)
     {
-        $this->times[] = $time;
+        if (!is_array($times)) {
+            $times = [$times];
+        }
+
+        foreach ($times as $time) {
+            $this->times[] = $time;
+        }
 
         return $this;
     }
