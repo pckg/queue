@@ -116,6 +116,12 @@ class Queue extends Record
                            );
     }
 
+    /**
+     * @param $command
+     * @param $timeout
+     *
+     * @return $this
+     */
     public function makeTimeoutAfterLast($command, $timeout)
     {
         $last = (new QueueEntity())->status('created')
@@ -128,6 +134,8 @@ class Queue extends Record
             $this->execute_at = date('Y-m-d H:i:s', strtotime($timeout, strtotime($last->execute_at)));
             $this->save();
         }
+
+        return $this;
     }
 
     public function then($next)
