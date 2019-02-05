@@ -47,8 +47,12 @@ class RunRabbitTask extends Command
             /**
              * Send message to connected queue ($queueName) on $route.
              */
-            for ($i = 0; $i < 100; $i++) {
-                $message = 'Test queue message ' . $i;
+            for ($i = 0; $i < 1; $i++) {
+                $message = json_encode([
+                                           'command' => 'echo 1',
+                                           'taskId'  => rand(0, 100),
+                                           'message' => 'Test queue message ' . $i,
+                                       ]);
                 $rabbitMQ->queueMessage($message, $exchange);
 
                 echo ' [x] Sent ', substr($message, 0, 10), ' to ', $queueName, ' on ', $exchange, "\n";

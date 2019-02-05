@@ -146,15 +146,78 @@ class Queue
     }
 
     /**
+     * @return RabbitMQ
+     */
+    protected function getRabbitMQ() {
+        return resolve(RabbitMQ::class);
+    }
+
+    /**
+     * We will wrap actual command into queue task wrapper to have option of tracking process.
+     * @param       $command
+     * @param array $params
+     */
+    public function queue($channel, $command, $params = [])
+    {
+        $wrappedCommand = $this->getCommand($command, $params);
+
+        /**
+         * Build JSON message.
+         */
+        $message = json_encode(['command' => $wrappedCommand]);
+
+        try {
+            /**
+             * Connect to channel.
+             */
+            $rabbitMQ = $this->getRabbitMQ();
+            $rabbitMQ->makeQueue($channel);
+
+            /**
+             * Send to queue.
+             */
+            $rabbitMQ->queueMessage($message, $exchange);
+        } catch (\Throwable $e) {
+            /**
+             * When RabbitMQ queueing fails, try with database.
+             */
+            return $this->create($command, $params, 'created', 'queue');
+        }
+    }
+
+    /**
      * @param       $command
      * @param array $data
      *
      * @return QueueRecord
      */
-    public function create($command, $data = [], $status = 'created')
+    public function create($command, $data = [], $status = 'created', $type = 'command')
+    {
+        $command = $this->getCommand($command, $data);
+        $queue = QueueRecord::create(
+            [
+                'execute_at' => date('Y-m-d H:i:s'),
+                'status'     => config('pckg.queue.enabled') ? $status : 'disabled',
+                'command'    => $command,
+                'type'       => $type,
+            ]
+        );
+
+        return $queue;
+    }
+
+    protected function getCommand($command, $data, $entrypoint = 'console')
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
-        $path = path('root') . 'console';
+        $path = path('root') . $entrypoint;
+        $parameters = $this->getParametersFromData();
+
+        $command = 'php ' . $path . ($appName ? ' ' . $appName : '') . ' ' . $command .
+            ($parameters ? ' ' . implode(' ', $parameters) : '');
+    }
+
+    protected function getParametersFromData($data)
+    {
         $parameters = [];
         foreach ($data as $key => $val) {
             if (is_int($key)) {
@@ -186,20 +249,7 @@ class Queue
             }
         }
 
-        $command = 'php ' . $path .
-                   ($appName ? ' ' . $appName : '') .
-                   ' ' . $command .
-                   ($parameters ? ' ' . implode(' ', $parameters) : '');
-        $queue = QueueRecord::create(
-            [
-                'execute_at' => date('Y-m-d H:i:s'),
-                'status'     => config('pckg.queue.enabled') ? $status : 'disabled',
-                'command'    => $command,
-                'type'       => 'command',
-            ]
-        );
-
-        return $queue;
+        return $parameters;
     }
 
 }
