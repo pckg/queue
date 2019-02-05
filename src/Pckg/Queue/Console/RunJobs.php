@@ -60,7 +60,7 @@ class RunJobs extends Command
             }
 
             if (!$pid) {
-                $this->output('Child?' . $class);
+                // $this->output('Child?' . $class);
 
                 return;
             }
