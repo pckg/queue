@@ -176,7 +176,7 @@ class Queue
             /**
              * Send to queue.
              */
-            $rabbitMQ->queueMessage($message, $exchange);
+            $rabbitMQ->queueMessage($message, $channel);
         } catch (\Throwable $e) {
             error_log(exception($e));
             /**
