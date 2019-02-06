@@ -210,9 +210,9 @@ class Queue
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $path = path('root') . $entrypoint;
-        $parameters = $this->getParametersFromData();
+        $parameters = $this->getParametersFromData($data);
 
-        $command = 'php ' . $path . ($appName ? ' ' . $appName : '') . ' ' . $command .
+        return 'php ' . $path . ($appName ? ' ' . $appName : '') . ' ' . $command .
             ($parameters ? ' ' . implode(' ', $parameters) : '');
     }
 
