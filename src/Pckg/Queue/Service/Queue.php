@@ -178,6 +178,7 @@ class Queue
              */
             $rabbitMQ->queueMessage($message, $exchange);
         } catch (\Throwable $e) {
+            error_log(exception($e));
             /**
              * When RabbitMQ queueing fails, try with database.
              */

@@ -86,7 +86,7 @@ class RunRabbitMQ extends AbstractChainOfReponsibility
             /**
              * Validate keys.
              */
-            if (!$data->taskId && !$data->command) {
+            if (!isset($data->command)) {
                 $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], false, false);
                 echo "no task or command\n";
 
