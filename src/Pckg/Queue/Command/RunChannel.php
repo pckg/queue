@@ -3,6 +3,7 @@
 use Impero\Servers\Service\ServerQueueDispatcher;
 use Pckg\Framework\Console\Command;
 use Pckg\Queue\Service\RabbitMQ;
+use Symfony\Component\Console\Input\InputOption;
 
 class RunChannel extends Command
 {
@@ -12,7 +13,7 @@ class RunChannel extends Command
         $this->setName('queue:run-channel')->setDescription('Run single channel queue')->addOptions([
                                                                                                         'channel'     => 'Queue channel',
                                                                                                         'concurrency' => 'Default 1',
-                                                                                                    ]);
+                                                                                                    ], InputOption::VALUE_REQUIRED);
     }
 
     public function handle()
