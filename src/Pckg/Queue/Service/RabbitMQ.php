@@ -46,7 +46,22 @@ class RabbitMQ
         return $this->getChannel()->queue_declare('', false, false, true, false);
     }
 
+    public function makeShoutQueue($channelName)
+    {
+
+        list($queue, ,) = $this->makeExchangeQueue();
+
+        $this->getChannel()->queue_bind($queue, $channelName);
+
+        return $queue;
+    }
+
     public function makeExchange($exchangeName, $type = 'direct')
+    {
+        return $this->getChannel()->exchange_declare($exchangeName, $type, false, false, false);
+    }
+
+    public function makeShoutExchange($exchangeName, $type = 'fanout')
     {
         return $this->getChannel()->exchange_declare($exchangeName, $type, false, false, false);
     }
@@ -72,15 +87,17 @@ class RabbitMQ
 
     public function concurrency($concurrent = 1)
     {
-        /**
-         * Feed worker with only 1 message at the time.
-         */
         return $this->getChannel()->basic_qos(null, $concurrent, null);
     }
 
     public function receiveMessage(callable $callback, $queueName, $exchange = '', $a = false)
     {
         $this->getChannel()->basic_consume($queueName, $exchange, false, $a, false, false, $callback);
+    }
+
+    public function receiveShoutMessage($queue, $callback)
+    {
+        $this->getChannel()->basic_consume($queue, '', false, true, false, false, $callback);
     }
 
     public function readCallbacks()
@@ -91,10 +108,52 @@ class RabbitMQ
         }
     }
 
+    public function sleepCallbacks(callable $break)
+    {
+        $channel = $this->getChannel();
+        while (count($channel->callbacks)) {
+            $channel->wait(null, true);
+
+            if ($break()) {
+                break;
+            }
+
+            /**
+             * We want to process messages as fast as possible when they are in queue.
+             */
+            if (!count($channel->callbacks)) {
+                sleep(1);
+            }
+        }
+    }
+
     public function close()
     {
         $this->getChannel()->close();
         $this->connection->close();
+    }
+
+    public function listenToShout(string $channelName, callable $listener, callable $condition)
+    {
+        $queue = $this->makeShoutQueue($channelName);
+
+        $this->receiveShoutMessage($queue, $listener);
+
+        $this->sleepCallbacks($condition);
+    }
+
+    public function prepareToListenShouted(string $channelName, callable $listener)
+    {
+        return $this->listenToShout($channelName, $listener, function() {
+            return true;
+        });
+    }
+
+    public function shout($channel, $message)
+    {
+        $msg = new AMQPMessage(is_array($message) || is_object($message) ? json_encode($message) : $message);
+
+        $this->getChannel()->basic_publish($msg, $channel);
     }
 
 }

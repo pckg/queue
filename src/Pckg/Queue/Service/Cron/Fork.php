@@ -16,17 +16,22 @@ class Fork
         static::$pids[$pid] = $pid;
     }
 
+    public static function hasWaiting()
+    {
+        return !!static::$pids;
+    }
+
     /**
      *
      */
-    public static function waitWaiting($seconds = 5)
+    public static function waitWaiting($seconds = 5, callable $check = null)
     {
         while (count(static::$pids) > 0) {
             foreach (static::$pids as $pid) {
                 /**
                  * Get process status code.
                  */
-                $res = pcntl_waitpid($pid, $status, WNOHANG);
+                $res = pcntl_waitpid($pid, $status, WNOHANG); // | WUNTRACED
 
                 if (!($res > 0)) {
                     /**
@@ -48,6 +53,9 @@ class Fork
                 /**
                  * Wait for 5 seconds before next check.
                  */
+                if ($check) {
+                    $check();
+                }
                 sleep($seconds);
                 continue;
             }
@@ -66,7 +74,7 @@ class Fork
      *
      * @return bool|int
      */
-    public static function fork(callable $fork, callable $name = null, callable $error = null)
+    public static function fork(callable $fork, $name = null, callable $error = null)
     {
         $pid = pcntl_fork();
         if ($pid == -1 || $pid) {
@@ -79,7 +87,7 @@ class Fork
         // child
         try {
             if ($name) {
-                $title = $name();
+                $title = is_only_callable($name) ? $name() : $name;
                 if (!cli_set_process_title($title)) {
                     /**
                      * This is crucial for counting number of running instances.
@@ -95,10 +103,13 @@ class Fork
 
             $fork();
 
+            unset(static::$pids[$pid]);
+
             exit(0);
         } catch (Throwable $e) {
             if ($error) {
                 $error($e);
+
                 return false;
             }
 
