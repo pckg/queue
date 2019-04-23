@@ -79,7 +79,7 @@ class RunChannel extends Command
                     $this->outputDated('CODE: ' . $return);
                 }
                 if ($output) {
-                    $this->outputDated('OUTPUT: ' . $output);
+                    $this->outputDated('OUTPUT: ' . json_encode($output));
                 }
             } catch (\Throwable $e) {
                 /**
