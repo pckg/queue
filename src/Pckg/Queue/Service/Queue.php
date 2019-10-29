@@ -159,12 +159,16 @@ class Queue
      */
     public function queue($channel, $command, $params = [])
     {
-        $wrappedCommand = $this->getCommand($command, $params);
+        $message = !$params && is_array($command)
+            ? json_encode($command)
+            : (function() use ($command, $params) {
+                $wrappedCommand = $this->getCommand($command, $params);
 
-        /**
-         * Build JSON message.
-         */
-        $message = json_encode(['command' => $wrappedCommand]);
+                /**
+                 * Build JSON message.
+                 */
+                return json_encode(['command' => $wrappedCommand]);
+            })();
 
         try {
             /**
