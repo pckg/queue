@@ -36,6 +36,30 @@ class RabbitMQ
         return $this->channels[$name];
     }
 
+    public function fullQueue($queue, callable $callback, array $options = [])
+    {
+        /**
+         * Listen to typed queue.
+         */
+        $this->makeQueue($queue);
+
+        /**
+         * Number of concurrent send mail jobs.
+         */
+        $rabbitMQ->concurrency($options['concurrent'] ?? 1);
+
+        /**
+         * Start listening.
+         */
+        $rabbitMQ->receiveMessage(function($msg) {
+            $ack = function() use ($msg) {
+                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+            };
+
+            $ok = $callback($msg, $ack);
+        }, $queue);
+    }
+
     public function makeQueue($queueName)
     {
         return $this->getChannel()->queue_declare($queueName, false, true, false, false);
