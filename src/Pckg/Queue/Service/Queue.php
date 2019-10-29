@@ -209,6 +209,10 @@ class Queue
 
     protected function getCommand($command, $data, $entrypoint = 'console')
     {
+        if (strpos($command, 'php ') === 0 || strpos($command, ':') === false) {
+            return $command;
+        }
+
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $path = path('root') . $entrypoint;
         $parameters = $this->getParametersFromData($data);
