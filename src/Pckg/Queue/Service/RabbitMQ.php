@@ -52,11 +52,15 @@ class RabbitMQ
          * Start listening.
          */
         $this->receiveMessage(function($msg) use ($callback) {
-            $ack = function() use ($msg) {
-                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+            $ack = function($multiple = false) use ($msg) {
+                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag'], $multiple);
             };
 
-            $ok = $callback($msg, $ack);
+            $nack = function($multiple = false, $requeue = true) use ($msg) {
+                $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], $multiple, $requeue);
+            };
+
+            $ok = $callback($msg, $ack, $nack);
         }, $queue);
     }
 
