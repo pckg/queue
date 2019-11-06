@@ -153,6 +153,19 @@ class Queue
     }
 
     /**
+     * Push job to general queue for jobs.
+     *
+     * @param string $command
+     * @param array  $params
+     *
+     * @return QueueRecord
+     */
+    public function job(string $command, $params = [], $channel = Queue::class)
+    {
+        return $this->queue($channel, $command, $params);
+    }
+
+    /**
      * We will wrap actual command into queue task wrapper to have option of tracking process.
      * @param       $command
      * @param array $params
