@@ -9,7 +9,9 @@
       "email": "schtr4jh@schtr4jh.net"
     }
   ],
-  "require": {},
+  "require": {
+    "php-amqplib/php-amqplib": "2.*"
+  },
   "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
