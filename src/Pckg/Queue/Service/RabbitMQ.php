@@ -67,7 +67,7 @@ class RabbitMQ
                     $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], $multiple,
                                                                $requeue);
                 } catch (\Throwable $e) {
-                    
+
                 }
             };
 
@@ -126,7 +126,9 @@ class RabbitMQ
 
     public function concurrency($concurrent = 1)
     {
-        return $this->getChannel()->basic_qos(null, $concurrent, null);
+        $this->getChannel()->basic_qos(null, $concurrent, true);
+
+        return $this->getChannel()->basic_qos(null, 1, false);
     }
 
     public function receiveMessage(callable $callback, $queueName, $exchange = '', $a = false)
