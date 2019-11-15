@@ -18,9 +18,8 @@ class RabbitMQ
     {
         $context = stream_context_create();
         $this->connection = new AMQPStreamConnection($connectionConfig['host'], $connectionConfig['port'],
-                                                     $connectionConfig['user'], $connectionConfig['pass'], '/',
-                                                     false, 'AMQPLAIN', null,
-                                                     'en_US', 3.0, 3.0, $context);
+                                                     $connectionConfig['user'], $connectionConfig['pass'], '/', false,
+                                                     'AMQPLAIN', null, 'en_US', 3.0, 3.0, $context);
     }
 
     public function queueJob($queue, $data = [])
@@ -56,11 +55,20 @@ class RabbitMQ
          */
         $this->receiveMessage(function($msg) use ($callback) {
             $ack = function($multiple = false) use ($msg) {
-                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag'], $multiple);
+                try {
+                    $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag'], $multiple);
+                } catch (\Throwable $e) {
+
+                }
             };
 
             $nack = function($multiple = false, $requeue = true) use ($msg) {
-                $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], $multiple, $requeue);
+                try {
+                    $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], $multiple,
+                                                               $requeue);
+                } catch (\Throwable $e) {
+                    
+                }
             };
 
             $ok = $callback($msg, $ack, $nack);
@@ -131,11 +139,11 @@ class RabbitMQ
         $this->getChannel()->basic_consume($queue, '', false, true, false, false, $callback);
     }
 
-    public function readCallbacks()
+    public function readCallbacks($blocking = true, $timeout = 0)
     {
         $channel = $this->getChannel();
         while (count($channel->callbacks)) {
-            $channel->wait();
+            $channel->wait(null, !$blocking, $timeout);
         }
     }
 
