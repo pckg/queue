@@ -19,7 +19,7 @@ class RabbitMQ
         $context = stream_context_create();
         $this->connection = new AMQPStreamConnection($connectionConfig['host'], $connectionConfig['port'],
                                                      $connectionConfig['user'], $connectionConfig['pass'], '/', false,
-                                                     'AMQPLAIN', null, 'en_US', 3.0, 3.0, $context);
+                                                     'AMQPLAIN', null, 'en_US', 3.0, 3.0, $context, false, 15);
     }
 
     public function queueJob($queue, $data = [])
