@@ -1,5 +1,6 @@
 <?php namespace Pckg\Queue\Service;
 
+use GuzzleHttp\Client;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -14,12 +15,44 @@ class RabbitMQ
 
     protected $channels = [];
 
+    protected $connectionConfig = [];
+
     public function __construct($connectionConfig)
     {
         $context = stream_context_create();
         $this->connection = new AMQPStreamConnection($connectionConfig['host'], $connectionConfig['port'],
                                                      $connectionConfig['user'], $connectionConfig['pass'], '/', false,
                                                      'AMQPLAIN', null, 'en_US', 3.0, 3.0, $context, false, 15);
+        unset($connectionConfig['pass']);
+        $this->connectionConfig = $connectionConfig;
+    }
+
+    /**
+     * @return AbstractConnection|AMQPStreamConnection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function getQueues()
+    {
+        try {
+            $client = new Client();
+            $connectionConfig = $this->connectionConfig;
+            $response = $client->get('http://' . $connectionConfig['host'] . ':15672/api/queues', [
+                'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode($connectionConfig['managerPass']),
+                ]
+            ]);
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     public function queueJob($queue, $data = [])
