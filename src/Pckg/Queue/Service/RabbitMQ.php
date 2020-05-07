@@ -45,7 +45,7 @@ class RabbitMQ
             $connectionConfig = $this->connectionConfig;
             $response = $client->get('http://' . $connectionConfig['host'] . ':15672/api/queues', [
                 'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode($connectionConfig['managerPass']),
+                    'Authorization' => 'Basic ' . base64_encode($connectionConfig['user'] . ':' . $connectionConfig['pass']),
                 ]
             ]);
 
