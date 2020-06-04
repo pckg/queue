@@ -53,7 +53,7 @@ class RunQueue extends Command
                  */
                 try {
                     $process = new Process($command);
-                    $process->setTimeout(180);
+                    $process->setTimeout(5 * 60);
                     $process->mustRun();
 
                     $output = $process->getOutput();
