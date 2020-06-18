@@ -70,8 +70,12 @@ class RunChannel extends Command
             try {
                 /**
                  * Try to execute task.
+                 * Note: RabbitMQ uses a heartbeat (120s).
+                 * If this script runs for more than defined heartbeat (119s) it'll report a broken connection
+                 * during message acknowledgement.
                  */
                 exec($data->command, $output, $return);
+                
                 /**
                  * Dump output and code.
                  */
