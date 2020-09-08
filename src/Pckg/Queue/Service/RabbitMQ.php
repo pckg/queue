@@ -6,7 +6,7 @@ use PhpAmqpLib\Connection\AbstractConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class RabbitMQ
+class RabbitMQ implements DriverInterface
 {
     /**
      * @var AMQPStreamConnection|AbstractConnection

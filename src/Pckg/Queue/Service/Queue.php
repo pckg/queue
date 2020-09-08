@@ -13,9 +13,20 @@ class Queue
      */
     protected $queue;
 
+    /**
+     * @var string
+     */
+    protected $driverClass = RabbitMQ::class;
+
+    /**
+     * @var DriverInterface
+     */
+    protected $driver;
+
     public function __construct(QueueEntity $queue)
     {
         $this->queue = $queue;
+        $this->driverClass = config('pckg.queue.driver', RabbitMQ::class);
     }
 
     public function getTotalByStatusAndTime($status, $time)
@@ -148,8 +159,26 @@ class Queue
     /**
      * @return RabbitMQ
      */
-    protected function getRabbitMQ() {
+    protected function getRabbitMQ()
+    {
         return resolve(RabbitMQ::class);
+    }
+
+    protected function getBeanstalkd()
+    {
+        return resolve(Beanstalkd::class);
+    }
+
+    /**
+     * @return mixed|object|DriverInterface
+     */
+    public function getDriver()
+    {
+        if (!$this->driver) {
+            $this->driver = resolve($this->driverClass);
+        }
+
+        return $this->driver;
     }
 
     /**
@@ -187,19 +216,20 @@ class Queue
             /**
              * Connect to channel.
              */
-            $rabbitMQ = $this->getRabbitMQ();
-            $rabbitMQ->makeQueue($channel);
+            $driver = $this->getDriver();
+            $driver->makeQueue($channel);
 
             /**
              * Send to queue.
              */
-            $rabbitMQ->queueMessage($message, $channel);
+            $driver->queueMessage($message, $channel);
         } catch (\Throwable $e) {
-            error_log(exception($e));
             /**
-             * When RabbitMQ queueing fails, try with database.
+             * When RabbitMQ queueing fails, try with database?
              */
-            return $this->create($command, $params, 'created', 'queue');
+            if (config('pckg.queue.fallback')) {
+                return $this->create($command, $params, 'created', 'queue');
+            }
         }
     }
 
