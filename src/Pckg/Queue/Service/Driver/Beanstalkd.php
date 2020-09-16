@@ -35,8 +35,8 @@ class Beanstalkd implements DriverInterface
     {
         return $this->connection->useTube($channel)
             ->put(
-                $message,  // encode data in payload
-                Pheanstalk::DEFAULT_PRIORITY,     // default priority
+                is_string($message) && @json_decode($message) ? $message : json_encode($message),
+                Pheanstalk::DEFAULT_PRIORITY,
                 0
             );
     }
