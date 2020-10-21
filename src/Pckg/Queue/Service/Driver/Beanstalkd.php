@@ -14,9 +14,9 @@ class Beanstalkd implements DriverInterface
     /**
      * Beanstalkd constructor.
      */
-    public function __construct()
+    public function __construct($host = 'beanstalkd-server', $port = 11300)
     {
-        $this->connection = Pheanstalk::create('beanstalkd-server');
+        $this->connection = Pheanstalk::create($host, $port);
     }
 
     /**
