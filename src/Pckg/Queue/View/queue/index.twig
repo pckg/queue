@@ -25,8 +25,6 @@
 </div>
 
 <div class="vue-pckg-queue-table">
-    {% do _vueManager.addView('Pckg/Queue:queue/_index') %}
-
     <pckg-queue-table :url="'/queue/ajax/jobs/manual'" :table="'Manual jobs'" :manual="true"></pckg-queue-table>
 
     <pckg-queue-table :url="'/queue/ajax/jobs/current'" :table="'Current jobs'"></pckg-queue-table>
