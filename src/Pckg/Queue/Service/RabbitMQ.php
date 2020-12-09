@@ -138,9 +138,13 @@ class RabbitMQ implements DriverInterface
         return $this->getChannel()->exchange_declare($exchangeName, $type, false, false, false);
     }
 
-    public function queueMessage($message, $exchange)
+    public function queueMessage($message, $exchange, array $options = [])
     {
-        $msg = new AMQPMessage($message, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+        $messageOptions = ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT];
+        if (isset($options['priority'])) {
+            $messageOptions['priority'] = $options['priority'];
+        }
+        $msg = new AMQPMessage($message, $messageOptions);
 
         return $this->getChannel()->basic_publish($msg, '', $exchange);
     }

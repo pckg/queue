@@ -5,6 +5,6 @@ interface DriverInterface
     
     public function makeQueue($channel);
 
-    public function queueMessage($message, $channel);
+    public function queueMessage($message, $channel, array $options = []);
 
 }

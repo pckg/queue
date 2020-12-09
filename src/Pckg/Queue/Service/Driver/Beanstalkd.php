@@ -31,7 +31,7 @@ class Beanstalkd implements DriverInterface
      * @param $channel
      * @return \Pheanstalk\Job
      */
-    public function queueMessage($message, $channel)
+    public function queueMessage($message, $channel, array $options = [])
     {
         return $this->connection->useTube($channel)
             ->put(

@@ -2,11 +2,19 @@
 
 use Carbon\Carbon;
 use Pckg\Database\Query\Raw;
+use Pckg\Parser\Driver\AbstractDriver;
+use Pckg\Parser\Driver\Curl;
+use Pckg\Parser\Driver\DriverInterface;
+use Pckg\Parser\Driver\Selenium;
 use Pckg\Queue\Entity\Queue as QueueEntity;
 use Pckg\Queue\Record\Queue as QueueRecord;
 
 class Queue
 {
+
+    const PRIORITY_LOW = 3;
+    const PRIORITY_MEDIUM = 6;
+    const PRIORITY_HIGH = 9;
 
     /**
      * @var QueueEntity
@@ -170,7 +178,7 @@ class Queue
     }
 
     /**
-     * @return mixed|object|DriverInterface
+     * @return mixed|object|DriverInterface|AbstractDriver|Curl|Selenium
      */
     public function getDriver()
     {
@@ -199,7 +207,7 @@ class Queue
      * @param       $command
      * @param array $params
      */
-    public function queue($channel, $command, $params = [])
+    public function queue($channel, $command, $params = [], $options = [])
     {
         $message = !$params && is_array($command)
             ? json_encode($command)
@@ -222,7 +230,7 @@ class Queue
             /**
              * Send to queue.
              */
-            $driver->queueMessage($message, $channel);
+            $driver->queueMessage($message, $channel, $options);
         } catch (\Throwable $e) {
             /**
              * When RabbitMQ queueing fails, try with database?
