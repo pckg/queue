@@ -238,6 +238,8 @@ class Queue
             if (config('pckg.queue.fallback')) {
                 return $this->create($command, $params, 'created', 'queue');
             }
+
+            throw $e;
         }
     }
 
