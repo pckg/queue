@@ -1,5 +1,6 @@
 <?php namespace Pckg\Queue\Service;
 
+use Defuse\Crypto\Key;
 use GuzzleHttp\Client;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
@@ -23,7 +24,7 @@ class RabbitMQ implements DriverInterface
         $this->connection = new AMQPStreamConnection($connectionConfig['host'], $connectionConfig['port'],
                                                      $connectionConfig['user'], $connectionConfig['pass'], '/', false,
                                                      'AMQPLAIN', null, 'en_US', 3.0, 3.0, $context, true, 120);
-        unset($connectionConfig['pass']);
+        //$connectionConfig['pass'] = encryptBlob($connectionConfig['pass']);
         $this->connectionConfig = $connectionConfig;
     }
 
@@ -51,6 +52,7 @@ class RabbitMQ implements DriverInterface
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (\Throwable $e) {
+            error_log(exception($e));
             return [];
         }
     }
