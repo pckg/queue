@@ -12,12 +12,28 @@
   "require": {
     "php-amqplib/php-amqplib": "2.*"
   },
-  "minimum-stability": "dev",
+  "require-dev": {
+    "pckg-app/frontend-dev": "dev-master"
+  },
   "autoload": {
     "psr-4": {
       "": [
         "src/"
       ]
     }
-  }
+  },
+  "scripts": {
+    "test": [
+      "vendor/bin/phpunit --help --stop-on-defect",
+      "vendor/bin/phpcloc cloc src/",
+      "vendor/bin/phpstan analyse src/ --level=1 || true",
+      "vendor/bin/phpcs -p src/ || true",
+      "vendor/bin/codecept run"
+    ]
+  },
+  "scripts-descriptions": {
+    "test": "Run all tests and quality checks"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
