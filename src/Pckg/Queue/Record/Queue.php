@@ -3,6 +3,19 @@
 use Pckg\Database\Record;
 use Pckg\Queue\Entity\Queue as QueueEntity;
 
+/**
+ * Class Queue
+ * @package Pckg\Queue\Record
+ * @property string $command
+ * @property string $log
+ * @property string $status
+ * @property float $progress
+ * @property float $percentage
+ * @property string $finished_at
+ * @property string $started_at
+ * @property string $execute_at
+ * @property int|null $waiting_id
+ */
 class Queue extends Record
 {
 

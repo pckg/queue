@@ -10,10 +10,17 @@
     }
   ],
   "require": {
-    "php-amqplib/php-amqplib": "2.*"
+    "php-amqplib/php-amqplib": "2.*",
+    "ext-json": "*"
   },
   "require-dev": {
-    "pckg-app/frontend-dev": "dev-master"
+    "pckg-app/frontend-dev": "dev-master",
+    "pckg/database": "dev-master",
+    "pckg/framework": "dev-master",
+    "pckg/migrator": "dev-master",
+    "pckg/manager": "dev-master",
+    "nesbot/carbon": "2.*",
+    "pda/pheanstalk": "^4.0"
   },
   "autoload": {
     "psr-4": {

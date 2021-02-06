@@ -108,7 +108,7 @@ class Fork
             unset(static::$pids[$pid]);
 
             exit(0);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             if ($error) {
                 $error($e);
 

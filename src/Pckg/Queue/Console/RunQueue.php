@@ -105,6 +105,9 @@ class RunQueue extends Command
         );
 
         if ($failed) {
+            /**
+             * @phpstan-ignore-next-line
+             */
             (new Notifier())
                 ->statuses(1)
                 ->message($failed . ' queue(s) failed')

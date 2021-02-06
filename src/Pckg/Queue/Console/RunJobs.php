@@ -213,6 +213,9 @@ class RunJobs extends Command
          * Notify super admins via dashboard.
          */
         if ($stats['failed']) {
+            /**
+             * @phpstan-ignore-next-line
+             */
             (new Notifier())
                 ->statuses(1)
                 ->message($stats['failed'] . ' job(s) failed')

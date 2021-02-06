@@ -176,6 +176,9 @@ class Queue
 
     protected function getBeanstalkd()
     {
+        /**
+         * @phpstan-ignore-next-line
+         */
         return resolve(Beanstalkd::class);
     }
 

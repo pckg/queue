@@ -28,7 +28,7 @@ class RunChannel extends Command
         /**
          * Each message callback.
          */
-        $callback = function ($msg) use ($channel) {
+        $callback = function ($msg) {
             /**
              * We expect json to be sent as event body.
              */
