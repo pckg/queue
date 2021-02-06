@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service;
+<?php
+
+namespace Pckg\Queue\Service;
 
 use Pckg\Queue\Service\Cron\Job;
 
@@ -14,5 +16,4 @@ class Cron
 
         return $job;
     }
-
 }

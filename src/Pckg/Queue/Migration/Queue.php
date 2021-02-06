@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Migration;
+<?php
+
+namespace Pckg\Queue\Migration;
 
 use Pckg\Migration\Migration;
 
@@ -34,5 +36,4 @@ class Queue extends Migration
         $queueLog->longtext('log');
         $queueLog->decimal('progress');
     }
-
 }

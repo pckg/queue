@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Console;
+<?php
+
+namespace Pckg\Queue\Console;
 
 use Derive\Notification\Service\Notifier;
 use Pckg\Framework\Console\Command;
@@ -11,12 +13,14 @@ class RunRabbitWorker extends Command
 
     protected function configure()
     {
-        $this->setName('queue:rabbit:run-worker')->setDescription('Run RabbitHQ worker')->addOptions([
+        $this->setName('queue:rabbit:run-worker')->setDescription('Run RabbitHQ worker')->addOptions(
+            [
                                                                                                          'queue'    => 'Queue name',
                                                                                                          'exchange' => 'Exchannge',
                                                                                                          'bind'     => 'Exchannge bind',
                                                                                                      ],
-                                                                                                     InputOption::VALUE_REQUIRED);
+            InputOption::VALUE_REQUIRED
+        );
     }
 
     /**
@@ -38,7 +42,7 @@ class RunRabbitWorker extends Command
 
             echo " [*] Waiting for messages. To exit press CTRL+C\n";
 
-            $callback = function($msg) use ($queueName, $exchange) {
+            $callback = function ($msg) use ($queueName, $exchange) {
                 echo \microtime(true) . ' [x] Received ', $msg->body, ' on ', $queueName, ' and ', $exchange, "\n";
                 $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
             };
@@ -55,7 +59,7 @@ class RunRabbitWorker extends Command
 
             echo " [*] Waiting for logs. To exit press CTRL+C\n";
 
-            $callback = function($msg) {
+            $callback = function ($msg) {
                 echo ' [x] ', $msg->delivery_info['routing_key'], " ", $msg->body, "\n";
                 //$msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
             };
@@ -69,5 +73,4 @@ class RunRabbitWorker extends Command
 
         $rabbitMQ->close();
     }
-
 }

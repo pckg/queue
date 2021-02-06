@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Command;
+<?php
+
+namespace Pckg\Queue\Command;
 
 use Grpc\Server;
 use Impero\Servers\Service\ServerQueueDispatcher;
@@ -42,5 +44,4 @@ class RunRabbitMQ extends AbstractChainOfReponsibility
     {
         return resolve(RabbitMQ::class);
     }
-
 }

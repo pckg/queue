@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service;
+<?php
+
+namespace Pckg\Queue\Service;
 
 use Carbon\Carbon;
 use Pckg\Database\Query\Raw;
@@ -113,7 +115,7 @@ class Queue
 
         $statuses = [];
         $data->each(
-            function(QueueRecord $queue) use (&$times, &$statuses) {
+            function (QueueRecord $queue) use (&$times, &$statuses) {
                 $times[$queue->year . '-' . $queue->week][$queue->status] = $queue->count;
                 $statuses[$queue->status][$queue->year . '-' . $queue->week] = $queue->count;
             }
@@ -211,7 +213,7 @@ class Queue
     {
         $message = !$params && is_array($command)
             ? json_encode($command)
-            : (function() use ($command, $params) {
+            : (function () use ($command, $params) {
                 $wrappedCommand = $this->getCommand($command, $params);
 
                 /**
@@ -313,5 +315,4 @@ class Queue
 
         return $parameters;
     }
-
 }

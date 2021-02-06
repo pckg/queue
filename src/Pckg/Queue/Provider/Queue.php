@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Provider;
+<?php
+
+namespace Pckg\Queue\Provider;
 
 use Pckg\Framework\Provider;
 use Pckg\Queue\Console\RunQueue;
@@ -23,12 +25,11 @@ class Queue extends Provider
     public function services()
     {
         return [
-            RabbitMQ::class => function() {
+            RabbitMQ::class => function () {
                 $config = config('pckg.queue.provider.rabbitmq.connection', []);
 
                 return new RabbitMQ($config);
             },
         ];
     }
-
 }

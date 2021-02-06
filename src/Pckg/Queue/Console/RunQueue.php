@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Console;
+<?php
+
+namespace Pckg\Queue\Console;
 
 use Derive\Notification\Service\Notifier;
 use Pckg\Framework\Console\Command;
@@ -27,7 +29,7 @@ class RunQueue extends Command
          * Set queue as started, we'll execute it later.
          */
         $waitingQueue->each(
-            function(QueueRecord $queue) {
+            function (QueueRecord $queue) {
                 $this->output('#' . $queue->id . ': ' . 'started (' . date('Y-m-d H:i:s') . ')');
                 $queue->changeStatus('started');
             }
@@ -38,7 +40,7 @@ class RunQueue extends Command
          */
         $failed = 0;
         $waitingQueue->each(
-            function(QueueRecord $queue) use (&$failed) {
+            function (QueueRecord $queue) use (&$failed) {
                 $this->output('#' . $queue->id . ': ' . 'running (' . date('Y-m-d H:i:s') . ')');
                 $queue->changeStatus('running');
 
@@ -109,5 +111,4 @@ class RunQueue extends Command
                 ->notify();
         }
     }
-
 }

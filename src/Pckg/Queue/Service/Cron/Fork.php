@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service\Cron;
+<?php
+
+namespace Pckg\Queue\Service\Cron;
 
 class Fork
 {
@@ -120,5 +122,4 @@ class Fork
             exit(1);
         }
     }
-
 }

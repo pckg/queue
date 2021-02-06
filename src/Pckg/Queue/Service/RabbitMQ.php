@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service;
+<?php
+
+namespace Pckg\Queue\Service;
 
 use Defuse\Crypto\Key;
 use GuzzleHttp\Client;
@@ -21,9 +23,22 @@ class RabbitMQ implements DriverInterface
     public function __construct($connectionConfig)
     {
         $context = stream_context_create();
-        $this->connection = new AMQPStreamConnection($connectionConfig['host'], $connectionConfig['port'],
-                                                     $connectionConfig['user'], $connectionConfig['pass'], '/', false,
-                                                     'AMQPLAIN', null, 'en_US', 3.0, 3.0, $context, true, 120);
+        $this->connection = new AMQPStreamConnection(
+            $connectionConfig['host'],
+            $connectionConfig['port'],
+            $connectionConfig['user'],
+            $connectionConfig['pass'],
+            '/',
+            false,
+            'AMQPLAIN',
+            null,
+            'en_US',
+            3.0,
+            3.0,
+            $context,
+            true,
+            120
+        );
         //$connectionConfig['pass'] = encryptBlob($connectionConfig['pass']);
         $this->connectionConfig = $connectionConfig;
     }
@@ -88,21 +103,22 @@ class RabbitMQ implements DriverInterface
         /**
          * Start listening.
          */
-        $this->receiveMessage(function($msg) use ($callback) {
-            $ack = function($multiple = false) use ($msg) {
+        $this->receiveMessage(function ($msg) use ($callback) {
+            $ack = function ($multiple = false) use ($msg) {
                 try {
                     $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag'], $multiple);
                 } catch (\Throwable $e) {
-
                 }
             };
 
-            $nack = function($multiple = false, $requeue = true) use ($msg) {
+            $nack = function ($multiple = false, $requeue = true) use ($msg) {
                 try {
-                    $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], $multiple,
-                                                               $requeue);
+                    $msg->delivery_info['channel']->basic_nack(
+                        $msg->delivery_info['delivery_tag'],
+                        $multiple,
+                        $requeue
+                    );
                 } catch (\Throwable $e) {
-
                 }
             };
 
@@ -224,7 +240,7 @@ class RabbitMQ implements DriverInterface
 
     public function prepareToListenShouted(string $channelName, callable $listener)
     {
-        return $this->listenToShout($channelName, $listener, function() {
+        return $this->listenToShout($channelName, $listener, function () {
             return true;
         });
     }
@@ -235,5 +251,4 @@ class RabbitMQ implements DriverInterface
 
         $this->getChannel()->basic_publish($msg, $channel);
     }
-
 }

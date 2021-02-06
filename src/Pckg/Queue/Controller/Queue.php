@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Controller;
+<?php
+
+namespace Pckg\Queue\Controller;
 
 use Exception;
 use Pckg\Framework\Controller;
@@ -56,5 +58,4 @@ class Queue extends Controller
 
         throw new Exception('Type ' . $type . 'not implemented');
     }
-
 }

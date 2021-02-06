@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Command;
+<?php
+
+namespace Pckg\Queue\Command;
 
 use Impero\Servers\Service\ServerQueueDispatcher;
 use Pckg\Framework\Console\Command;
@@ -26,7 +28,7 @@ class RunChannel extends Command
         /**
          * Each message callback.
          */
-        $callback = function($msg) use ($channel) {
+        $callback = function ($msg) use ($channel) {
             /**
              * We expect json to be sent as event body.
              */
@@ -75,7 +77,7 @@ class RunChannel extends Command
                  * during message acknowledgement.
                  */
                 exec($data->command, $output, $return);
-                
+
                 /**
                  * Dump output and code.
                  */
@@ -152,5 +154,4 @@ class RunChannel extends Command
             $this->outputDated('NACK FAILED: ' . exception($e));
         }
     }
-
 }

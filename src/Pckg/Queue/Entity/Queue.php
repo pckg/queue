@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Entity;
+<?php
+
+namespace Pckg\Queue\Entity;
 
 use Pckg\Database\Entity;
 use Pckg\Database\Repository;
@@ -71,5 +73,4 @@ class Queue extends Entity
     {
         return $this->where('finished_at', date('Y-m-d H:i:s', strtotime('-' . $time)), '>');
     }
-
 }

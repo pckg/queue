@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service\Cron;
+<?php
+
+namespace Pckg\Queue\Service\Cron;
 
 use Pckg\Framework\Console\Command;
 use Symfony\Component\Process\Process;
@@ -72,7 +74,7 @@ class Job
     {
         if (is_string($this->command)) {
             $class = $this->command;
-            $this->command = new $class;
+            $this->command = new $class();
         }
 
         return $this->command;
@@ -276,13 +278,13 @@ class Job
     public function fork()
     {
         Fork::fork(
-            function() {
+            function () {
                 /**
                  * Execute this forked.
                  */
                 $this->command->executeManually($this->parameters);
             },
-            function() {
+            function () {
                 /**
                  * Command name for possible tracking.
                  */
@@ -371,7 +373,6 @@ class Job
                 return 'today at ' . $time;
             }
             return 'yesterday at ' . $time;
-
         }
         if ($this->days) {
             // onDays()->at()
@@ -385,7 +386,6 @@ class Job
                 return 'today at ' . $time;
             }
             return 'previous ' . date('l') . ' at ' . $time;
-
         }
     }
 
@@ -403,5 +403,4 @@ class Job
 
         return true;
     }
-
 }

@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service\Driver;
+<?php
+
+namespace Pckg\Queue\Service\Driver;
 
 use Pckg\Queue\Service\DriverInterface;
 use Pheanstalk\Pheanstalk;
@@ -40,6 +42,4 @@ class Beanstalkd implements DriverInterface
                 0
             );
     }
-
-
 }

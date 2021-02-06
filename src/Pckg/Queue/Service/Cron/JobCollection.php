@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Service\Cron;
+<?php
+
+namespace Pckg\Queue\Service\Cron;
 
 class JobCollection
 {
@@ -16,5 +18,4 @@ class JobCollection
     {
         return $this->jobs;
     }
-
 }

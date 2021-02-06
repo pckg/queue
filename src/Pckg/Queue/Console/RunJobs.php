@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Console;
+<?php
+
+namespace Pckg\Queue\Console;
 
 use Derive\Notification\Service\Notifier;
 use Pckg\Collection;
@@ -102,7 +104,7 @@ class RunJobs extends Command
              */
             $pids = [];
             $jobs->each(
-                function(Job $job) use (&$pids) {
+                function (Job $job) use (&$pids) {
                     $this->tryFork($job, $pids);
                 }
             );
@@ -126,7 +128,6 @@ class RunJobs extends Command
         } catch (Throwable $e) {
             $this->output(date('His') . ' - EXCEPTION: ' . exception($e));
         } finally {
-
             return [
                 'failed' => $failed,
                 'e'      => $e,
@@ -229,7 +230,7 @@ class RunJobs extends Command
          * Check for repeating jobs.
          */
         $repeats = new Collection();
-        $jobs->each(function(Job $job) use ($repeats) {
+        $jobs->each(function (Job $job) use ($repeats) {
             if (!($repeat = $job->getRepeat())) {
                 return;
             }
@@ -246,7 +247,7 @@ class RunJobs extends Command
         }
 
         while (time() < $this->startedAt + 45) {
-            $repeats->each(function(Job $job) {
+            $repeats->each(function (Job $job) {
                 if ($job->getProcess()->isRunning()) {
                     if ($this->option('debug')) {
                         $this->output('Wait for finish');
@@ -277,14 +278,15 @@ class RunJobs extends Command
     protected function filterJobs(Collection $jobs)
     {
         return $jobs->filter(
-            function(Job $job) {
+            function (Job $job) {
                 /**
                  * Touch file so parent process knows that we're not stuck.
                  */
                 $this->touchPidFile();
 
                 return $job->shouldBeRun();
-            });
+            }
+        );
     }
 
     protected function runJobs(Collection $jobs)
@@ -302,7 +304,7 @@ class RunJobs extends Command
              * Try to execute job.
              */
             $jobs->each(
-                function(Job $job) use (&$failed) {
+                function (Job $job) use (&$failed) {
                     $e = null;
                     $process = null;
 
@@ -328,7 +330,7 @@ class RunJobs extends Command
             /**
              * Check sync job statuses.
              */
-            $jobs->each(function(Job $job) {
+            $jobs->each(function (Job $job) {
                 /**
                  * Job is asynchronuous.
                  */
@@ -353,7 +355,7 @@ class RunJobs extends Command
             /**
              * Check async job statuses.
              */
-            $jobs->each(function(Job $job) {
+            $jobs->each(function (Job $job) {
                 /**
                  * Job should be finished already.
                  */
@@ -371,7 +373,7 @@ class RunJobs extends Command
                 if ($this->option('debug')) {
                     $this->output(date('His') . " - Waiting for async " . $job->getCommandName());
                 }
-            })->each(function(Job $job) {
+            })->each(function (Job $job) {
                 if (!$job->getProcess()->isSuccessful()) {
                     $this->output("ERROR: " . $job->getProcess()->getErrorOutput());
                 }
@@ -397,5 +399,4 @@ class RunJobs extends Command
             file_put_contents($this->pidFile, "ok");
         }
     }
-
 }

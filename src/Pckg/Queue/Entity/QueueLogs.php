@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Entity;
+<?php
+
+namespace Pckg\Queue\Entity;
 
 use Pckg\Database\Entity;
 use Pckg\Database\Repository;
@@ -14,5 +16,4 @@ class QueueLogs extends Entity
         return $this->belongsTo(Queue::class)
                     ->foreignKey('queue_id');
     }
-
 }

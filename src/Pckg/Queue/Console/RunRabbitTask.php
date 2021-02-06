@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Console;
+<?php
+
+namespace Pckg\Queue\Console;
 
 use Derive\Notification\Service\Notifier;
 use Pckg\Framework\Console\Command;
@@ -11,12 +13,14 @@ class RunRabbitTask extends Command
 
     protected function configure()
     {
-        $this->setName('queue:rabbit:run-task')->setDescription('Run RabbitHQ task')->addOptions([
+        $this->setName('queue:rabbit:run-task')->setDescription('Run RabbitHQ task')->addOptions(
+            [
                                                                                                      'queue'    => 'Queue name',
                                                                                                      'exchange' => 'Exchange name',
                                                                                                      'bind'     => 'Exchange bind',
                                                                                                  ],
-                                                                                                 InputOption::VALUE_REQUIRED);
+            InputOption::VALUE_REQUIRED
+        );
     }
 
     /**
@@ -67,7 +71,6 @@ class RunRabbitTask extends Command
 
                 echo ' [x] Sent ', substr($message, 0, 10), ' to ', $queueName, ' on ', $exchange, "\n";
             }
-
         }
 
         $rabbitMQ->close();
@@ -76,5 +79,4 @@ class RunRabbitTask extends Command
 
         return;
     }
-
 }

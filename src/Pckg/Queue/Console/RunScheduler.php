@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Console;
+<?php
+
+namespace Pckg\Queue\Console;
 
 use Derive\Notification\Service\Notifier;
 use Pckg\Framework\Console\Command;
@@ -50,5 +52,4 @@ class RunScheduler extends Command
             'bind'     => $nextChannel,
         ]);*/
     }
-
 }
