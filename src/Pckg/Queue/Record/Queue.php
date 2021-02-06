@@ -1,4 +1,6 @@
-<?php namespace Pckg\Queue\Record;
+<?php
+
+namespace Pckg\Queue\Record;
 
 use Pckg\Database\Record;
 use Pckg\Queue\Entity\Queue as QueueEntity;
@@ -32,7 +34,7 @@ class Queue extends Record
         return implode(
             ' ',
             array_map(
-                function($string) {
+                function ($string) {
                     if (strlen($string) > 13 && (!strpos($string, ':') || strpos($string, '{'))) {
                         return substr($string, 0, 5) . '...' . substr($string, -5);
                     }
@@ -77,7 +79,7 @@ class Queue extends Record
                 [
                     'queue_id' => $this->id,
                     'datetime' => date('Y-m-d H:i:s'),
-                    'status'   => $this->status,
+                    'status' => $this->status,
                 ]
             )
         );
@@ -91,7 +93,7 @@ class Queue extends Record
         }
 
         $datetimes = [
-            'running'  => 'started_at',
+            'running' => 'started_at',
             'finished' => 'finished_at',
         ];
 
@@ -107,7 +109,7 @@ class Queue extends Record
         }
 
         $percentages = [
-            'running'  => 0,
+            'running' => 0,
             'finished' => 100,
         ];
 
@@ -119,14 +121,14 @@ class Queue extends Record
     public function makeUniqueInFuture()
     {
         (new QueueEntity())->status('created')
-                           ->where('id', $this->id, '!=')
-                           ->where('command', $this->command)
-                           ->all()
-                           ->each(
-                               function(Queue $record) {
-                                   $record->changeStatus('skipped_unique');
-                               }
-                           );
+            ->where('id', $this->id, '!=')
+            ->where('command', $this->command)
+            ->all()
+            ->each(
+                function (Queue $record) {
+                    $record->changeStatus('skipped_unique');
+                }
+            );
     }
 
     /**
@@ -138,10 +140,10 @@ class Queue extends Record
     public function makeTimeoutAfterLast($command, $timeout)
     {
         $last = (new QueueEntity())->status('created')
-                                   ->where('id', $this->id, '!=')
-                                   ->where('command', '%' . $command . '%', 'LIKE')
-                                   ->orderBy('execute_at DESC')
-                                   ->one();
+            ->where('id', $this->id, '!=')
+            ->where('command', '%' . $command . '%', 'LIKE')
+            ->orderBy('execute_at DESC')
+            ->one();
 
         if ($last) {
             $this->execute_at = date('Y-m-d H:i:s', strtotime($timeout, strtotime($last->execute_at)));
@@ -179,5 +181,4 @@ class Queue extends Record
 
         return $this;
     }
-
 }
