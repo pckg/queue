@@ -3,6 +3,7 @@
 namespace Pckg\Queue\Provider;
 
 use Pckg\Framework\Provider;
+use Pckg\Queue\Console\CreateRabbitTask;
 use Pckg\Queue\Console\RunQueue;
 use Pckg\Queue\Console\RunRabbitTask;
 use Pckg\Queue\Console\RunRabbitWorker;
@@ -19,6 +20,7 @@ class Queue extends Provider
             RunQueue::class,
             RunRabbitTask::class,
             RunRabbitWorker::class,
+            CreateRabbitTask::class,
         ];
     }
 

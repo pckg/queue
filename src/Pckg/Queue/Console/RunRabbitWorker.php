@@ -35,19 +35,31 @@ class RunRabbitWorker extends Command
         $queueName = $this->option('queue');
         $exchange = $this->option('exchange');
         $bind = $this->option('bind');
-
         if (!$bind) {
             $queueName = $exchange;
             $rabbitMQ->makeQueue($queueName);
 
             echo " [*] Waiting for messages. To exit press CTRL+C\n";
 
-            $callback = function ($msg) use ($queueName, $exchange) {
-                echo \microtime(true) . ' [x] Received ', $msg->body, ' on ', $queueName, ' and ', $exchange, "\n";
+            $lastSeconds = date('s');
+            $numLastSecond = 0;
+            $totalLength = 0;
+            $callback = function ($msg) use ($queueName, $exchange, &$lastSeconds, &$numLastSecond, &$totalLength) {
+                $seconds = date('s');
+                if ($lastSeconds !== $seconds) {
+                    echo $numLastSecond . ' per second, ' . $totalLength . ' bytes' . "\n";
+                    $numLastSecond = 1;
+                    $lastSeconds = $seconds;
+                    $totalLength = 0;
+                } else {
+                    $numLastSecond++;
+                }
+                $totalLength += strlen($msg->body);
+                //echo \microtime(true) . ' [x] Received ', $msg->body, ' on ', $queueName, ' and ', $exchange, "\n";
                 $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
             };
 
-            $rabbitMQ->concurrency(5);
+            $rabbitMQ->concurrency(10);
             $rabbitMQ->receiveMessage($callback, $exchange);
         } else {
             /**
