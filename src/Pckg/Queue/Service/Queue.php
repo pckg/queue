@@ -240,6 +240,7 @@ class Queue
             /**
              * When RabbitMQ queueing fails, try with database?
              */
+            error_log(exception($e));
             if (config('pckg.queue.fallback')) {
                 return $this->create($command, $params, 'created', 'queue');
             }
