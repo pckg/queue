@@ -194,6 +194,14 @@ class Queue
         return $this->driver;
     }
 
+    public function setDriver(\Pckg\Queue\Service\DriverInterface $driver)
+    {
+        $this->driverClass = get_class($driver);
+        $this->driver = $driver;
+
+        return $this;
+    }
+
     /**
      * Push job to general queue for jobs.
      *
