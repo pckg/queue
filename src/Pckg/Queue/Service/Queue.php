@@ -244,6 +244,8 @@ class Queue
              * Send to queue.
              */
             $driver->queueMessage($message, $channel, $options);
+
+            return true;
         } catch (\Throwable $e) {
             /**
              * When RabbitMQ queueing fails, try with database?
