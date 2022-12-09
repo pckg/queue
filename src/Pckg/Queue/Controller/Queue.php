@@ -8,7 +8,6 @@ use Pckg\Queue\Service\Queue as QueueService;
 
 class Queue extends Controller
 {
-
     /**
      * @var QueueService
      */

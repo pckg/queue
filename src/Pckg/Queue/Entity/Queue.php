@@ -6,9 +6,11 @@ use Pckg\Database\Entity;
 use Pckg\Database\Repository;
 use Pckg\Queue\Record\Queue as QueueRecord;
 
+/**
+ * @method withLogs()
+ */
 class Queue extends Entity
 {
-
     protected $record = QueueRecord::class;
 
     public function logs()

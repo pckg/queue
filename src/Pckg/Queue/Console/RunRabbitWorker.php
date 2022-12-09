@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class RunRabbitWorker extends Command
 {
-
     protected function configure()
     {
         $this->setName('queue:rabbit:run-worker')->setDescription('Run RabbitHQ worker')->addOptions(
@@ -23,9 +22,6 @@ class RunRabbitWorker extends Command
         );
     }
 
-    /**
-     * @param Queue $queue
-     */
     public function handle(RabbitMQ $rabbitMQ)
     {
         /**
@@ -44,7 +40,7 @@ class RunRabbitWorker extends Command
             $lastSeconds = date('s');
             $numLastSecond = 0;
             $totalLength = 0;
-            $callback = function ($msg) use ($queueName, $exchange, &$lastSeconds, &$numLastSecond, &$totalLength) {
+            $callback = function ($msg) use (&$lastSeconds, &$numLastSecond, &$totalLength) {
                 $seconds = date('s');
                 if ($lastSeconds !== $seconds) {
                     echo $numLastSecond . ' per second, ' . $totalLength . ' bytes' . "\n";

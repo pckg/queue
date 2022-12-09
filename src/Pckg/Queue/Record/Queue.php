@@ -17,10 +17,12 @@ use Pckg\Queue\Entity\Queue as QueueEntity;
  * @property string $started_at
  * @property string $execute_at
  * @property int|null $waiting_id
+ * @property ?int $count
+ * @property ?int $year
+ * @property ?int $week
  */
 class Queue extends Record
 {
-
     protected $entity = QueueEntity::class;
 
     protected $toArray = [

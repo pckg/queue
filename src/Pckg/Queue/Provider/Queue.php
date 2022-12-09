@@ -12,7 +12,6 @@ use Pckg\Queue\Service\RabbitMQ;
 
 class Queue extends Provider
 {
-
     public function consoles()
     {
         return [

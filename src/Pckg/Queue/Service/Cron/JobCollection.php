@@ -4,7 +4,6 @@ namespace Pckg\Queue\Service\Cron;
 
 class JobCollection
 {
-
     protected $jobs = [];
 
     public function add($job)

@@ -13,7 +13,6 @@ use Pckg\Queue\Record\Queue as QueueRecord;
 
 class Queue
 {
-
     const PRIORITY_LOW = 3;
     const PRIORITY_MEDIUM = 6;
     const PRIORITY_HIGH = 9;

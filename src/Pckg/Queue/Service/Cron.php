@@ -6,7 +6,6 @@ use Pckg\Queue\Service\Cron\Job;
 
 class Cron
 {
-
     /**
      * @return Job
      */

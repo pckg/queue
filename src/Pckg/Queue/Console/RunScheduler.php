@@ -12,16 +12,12 @@ use Throwable;
 
 class RunScheduler extends Command
 {
-
     protected function configure()
     {
         $this->setName('scheduler:run')
             ->setDescription('Run scheduler');
     }
 
-    /**
-     * @param Queue $queue
-     */
     public function handle(RabbitMQ $rabbitMQ)
     {
         $rabbitMQ->makeQueue('someexchange');

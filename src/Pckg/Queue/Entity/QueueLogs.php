@@ -8,7 +8,6 @@ use Pckg\Queue\Record\QueueLog;
 
 class QueueLogs extends Entity
 {
-
     protected $record = QueueLog::class;
 
     public function queue()

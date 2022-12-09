@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class CreateRabbitTask extends Command
 {
-
     protected function configure()
     {
         $this->setName('queue:rabbit:create-task')->setDescription('Create task in RabbitMQ')->addOptions(
@@ -21,9 +20,6 @@ class CreateRabbitTask extends Command
         );
     }
 
-    /**
-     * @param Queue $queue
-     */
     public function handle(RabbitMQ $rabbitMQ)
     {
         /**
@@ -41,7 +37,7 @@ class CreateRabbitTask extends Command
         while ($i < $jobs) {
             $i++;
             queue($exchange, date('Y-m-d H:i:s') . microtime() . str_repeat(sha1(microtime()), $times));
-            if ($i%10000 === 0) { // check every 10 seconds for example. try to schedule this somehow.
+            if ($i % 10000 === 0) { // check every 10 seconds for example. try to schedule this somehow.
                 $this->outputDated('Checking heartbeat');
                 $rabbitMQ->getConnection()->checkHeartBeat();
             }

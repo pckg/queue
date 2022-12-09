@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class RunRabbitTask extends Command
 {
-
     protected function configure()
     {
         $this->setName('queue:rabbit:run-task')->setDescription('Run RabbitHQ task')->addOptions(
@@ -23,9 +22,6 @@ class RunRabbitTask extends Command
         );
     }
 
-    /**
-     * @param Queue $queue
-     */
     public function handle(RabbitMQ $rabbitMQ)
     {
         /**

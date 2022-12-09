@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class RunChannel extends Command
 {
-
     protected function configure()
     {
         $this->setName('queue:run-channel')->setDescription('Run single channel queue')->addOptions([

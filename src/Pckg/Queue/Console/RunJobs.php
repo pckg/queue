@@ -13,7 +13,6 @@ use Throwable;
 
 class RunJobs extends Command
 {
-
     protected $pidFile;
 
     protected $startedAt;
@@ -175,9 +174,6 @@ class RunJobs extends Command
         $this->tryFork($job, $pids);
     }
 
-    /**
-     * @param Queue $queue
-     */
     public function handle()
     {
         $this->pidFile = $this->option('pid-file');

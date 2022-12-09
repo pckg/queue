@@ -10,7 +10,6 @@ use Pckg\Queue\Service\RabbitMQ;
 
 class RunRabbitMQ extends AbstractChainOfReponsibility
 {
-
     protected $response;
 
     public function __construct(Response $response)

@@ -7,7 +7,6 @@ use Pheanstalk\Pheanstalk;
 
 class Beanstalkd implements DriverInterface
 {
-
     /**
      * @var Pheanstalk
      */

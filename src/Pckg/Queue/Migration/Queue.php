@@ -6,12 +6,13 @@ use Pckg\Migration\Migration;
 
 class Queue extends Migration
 {
-
     public function up()
     {
         $this->queueUp();
 
         $this->save();
+
+        return $this;
     }
 
     protected function queueUp()

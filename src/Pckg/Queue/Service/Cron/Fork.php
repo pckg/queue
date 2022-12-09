@@ -4,7 +4,6 @@ namespace Pckg\Queue\Service\Cron;
 
 class Fork
 {
-
     /**
      * @var array
      */

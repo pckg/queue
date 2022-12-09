@@ -7,7 +7,6 @@ use Symfony\Component\Process\Process;
 
 class Job
 {
-
     /**
      * @var string|Command
      */
@@ -43,7 +42,7 @@ class Job
     protected $repeat = false;
 
     /**
-     * @var Process
+     * @var ?Process
      */
     protected $process;
 
@@ -89,11 +88,11 @@ class Job
     {
         $appName = config('pckg.queue.app', lcfirst(get_class(app())));
         $path = path('root') . 'console';
-        $parameters = [];
-        $command = 'php ' . $path .
-            ($appName ? ' ' . $appName : '') .
-            ' ' . $this->getCommand()->getName() .
-            ($parameters ? ' ' . implode(' ', $parameters) : '')
+        //$parameters = [];
+        $command = 'php ' . $path
+            . ($appName ? ' ' . $appName : '')
+            . ' ' . $this->getCommand()->getName()
+            // . ($parameters ? ' ' . implode(' ', $parameters) : '')
             . ($this->background ? ' > /dev/null 2>&1 &' : '');
 
         return $command;

@@ -11,16 +11,12 @@ use Throwable;
 
 class RunQueue extends Command
 {
-
     protected function configure()
     {
         $this->setName('queue:run')
              ->setDescription('Run waiting queue');
     }
 
-    /**
-     * @param Queue $queue
-     */
     public function handle(Queue $queueService)
     {
         $waitingQueue = $queueService->getWaiting();

@@ -6,7 +6,6 @@ use Pckg\Queue\Service\DriverInterface;
 
 class Mock implements DriverInterface
 {
-
     protected $messages = [];
 
     public function __construct()
